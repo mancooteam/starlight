@@ -9,10 +9,17 @@ let makeCard = (p) => {
     let ranga = document.createElement("ranga");
     let linki = document.createElement("linki");
 
+    zdj.style=`background-image: url(${p.avek});`;
+
     imie.innerText = p.imie;
     klan.innerText = p.klan;
     plec.innerText = p.plec;
     ranga.innerText = p.ranga;
+
+    info.append(imie,klan,plec,ranga,linki);
+    postac.append(zdj,info);
+
+    main.appendChild(card);
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
