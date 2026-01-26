@@ -1,0 +1,87 @@
+* {
+    padding: 0;
+    margin: 0;
+}
+
+body {
+    background-color: var(--tlo2);
+    color: var(--tekst);
+    font-family: verdana;
+    font-size: 14px;
+}
+
+nav {
+    background-color: var(--tlo4);
+    padding: 10px 7px;
+    position: fixed;
+    top: 0;
+    color: var(--tekst2);
+    width: 100%;
+}
+
+main {
+    margin-top: 50px;
+    padding: 0px 30px;
+}
+
+header {
+    background-color: var(--tlo3);
+    padding: 30px 12px;
+    text-align: center;
+    border: solid 1px var(--tlo4);
+    margin: 20px 0px
+}
+
+page {
+    display: block;
+    width: 100%;
+    height: auto;
+    background-color: var(--tlo1);
+}
+
+h1 {
+    color: var(--em2);
+}
+
+p {
+    text-align: justify;
+    line-height: 18px;
+    padding: 5px 30px;
+}
+
+em {
+    color: var(--em1);
+    font-weight: bold;
+    text-decoration: none;
+}
+
+b{
+    color: var(--em1);
+}
+
+/** ROOT COLORS **/
+:root {
+    --tlo1: #373737;
+    --tlo2: #2e2e2e;
+    --tlo3: #242424;
+    --tlo4: #1C1C1C;
+    --tekst: #bdbdbd;
+    --em1: #C1D48E;
+    --em2: #96C433;
+    --em3: #a5c462;
+    --grom:#FFCE7A;
+    --cien:#E38F9C;
+    --rzeka:#7898FF;
+    --wicher:#A3E0D5;
+    --pnk:#ffffff;
+    --samotnik:#7DBF65;
+    --npc:#BE8EF5;
+    --pustka:#6C8570;
+    --pwl:#886CAB;
+    --gk:#5C5AA6;
+    --cl:#8F534B;
+    --nkt:#828282;
+    --border: 1px #1C1C1C solid;
+    --scrollthumb: #7e7e7f;
+    --tekst2: #eee;
+}
