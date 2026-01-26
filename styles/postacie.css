@@ -35,6 +35,11 @@ imie {
     text-align: center;
     font-weight: bold;
     font-family: "Poppins", sans-serif;
+    padding: 9px 0px;
+    font-size: 16px;
+    margin-top: 5px;
+    border-bottom: 1px solid;
+    margin-bottom: 10px;
 }
 
 plec {

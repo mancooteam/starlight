@@ -30,8 +30,10 @@ let makeCard = (p) => {
     plec.innerText = p.plec;
     ranga.innerText = p.ranga;
 
+    linki.innerHTML = `<a href="edit.html?id=${p.id}">Edytuj</a> | <a href="view.html?=id${p.id}">Zobacz</a>`
+
     info.append(imie,klan,plec,ranga,linki);
-    card.append(zdj,info);
+    card.append(zdj, info, linki);
 
     card.style = `border: 2px solid var(--${p.klan})`;
 
