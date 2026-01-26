@@ -26,7 +26,7 @@
         $res = [
             "valid" => false,
             "data" => "Błąd podczas zdobywania danych"
-        ]
+        ];
     }
 
     header('Content-Type: application/json');
