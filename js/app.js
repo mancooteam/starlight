@@ -32,6 +32,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     } catch (error) {
         console.error("Error" + error);
-        ocument.getElementById("noti").innerText = error;
+        document.getElementById("noti").innerText = error;
     }
 })
