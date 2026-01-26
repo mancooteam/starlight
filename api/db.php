@@ -1,36 +1,41 @@
 <?php
 
 function getDBConnection() {
+    // Extraer variables de entorno
     $host = getenv('DB_HOST');
     $port = getenv('DB_PORT');
     $db   = getenv('DB_NAME');
     $user = getenv('DB_USER');
     $pass = getenv('DB_PASS');
-
     $ca_content = getenv('MYSQL_ATTR_SSL_CA');
 
     if (!$ca_content) {
-        die("Error Crítico: No se encontró la variable MYSQL_ATTR_SSL_CA en el entorno.");
+        die("Error: La variable MYSQL_ATTR_SSL_CA está vacía.");
     }
 
-    $ca_path = tempnam(sys_get_temp_dir(), 'db-ca-cert');
-    file_put_contents($ca_path, $ca_content);
+    $temp_ca = tempnam(sys_get_temp_dir(), 'aiven_');
+    file_put_contents($temp_ca, $ca_content);
 
-    $dsn = "mysql:host=$host;port=$port;dbname=$db;charset=utf8mb4";
+    $conexion = mysqli_init();
 
-    $options = [
-        PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-        PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-        // LE DECIMOS A PDO DÓNDE ESTÁ EL ARCHIVO TEMPORAL
-        PDO::MYSQL_ATTR_SSL_CA => $ca_path,
-        PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT => false // A veces necesario en nubes
-    ];
+    mysqli_ssl_set($conexion, NULL, NULL, $temp_ca, NULL, NULL);
 
-    try {
-        $pdo = new PDO($dsn, $user, $pass, $options);
-        return $pdo;
-    } catch (PDOException $e) {
-        die("Error de conexión SQL: " . $e->getMessage());
+    $resultado = mysqli_real_connect(
+        $conexion,
+        $host,
+        $user,
+        $pass,
+        $db,
+        $port,
+        NULL,
+        MYSQLI_CLIENT_SSL
+    );
+    if (file_exists($temp_ca)) {
+        unlink($temp_ca);
     }
+    if (!$resultado) {
+        die("Error de conexión: " . mysqli_connect_error());
+    }
+
+    return $conexion;
 }
-?>

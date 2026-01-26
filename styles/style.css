@@ -34,9 +34,10 @@ header {
 
 page {
     display: block;
-    width: 100%;
+    width: 80%;
     height: auto;
     background-color: var(--tlo1);
+    margin: auto;
 }
 
 h1 {
@@ -57,6 +58,26 @@ em {
 
 b{
     color: var(--em1);
+}
+
+a {
+    color: var(--em2);
+    text-decoration: none;
+}
+
+footer {
+    background-color: var(--tlo4);
+    text-align: center;
+    color: var(--tekst2);
+    padding: 10px 0px;
+    font-size: 12px;
+    margin-top: 10px;
+}
+
+nav a {
+    color: var(--tekst2);
+    text-transform: uppercase;
+    font-size: 12px;
 }
 
 /** ROOT COLORS **/
@@ -84,4 +105,5 @@ b{
     --border: 1px #1C1C1C solid;
     --scrollthumb: #7e7e7f;
     --tekst2: #eee;
+    --tekst3: #7e7e7f;
 }
