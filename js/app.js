@@ -7,7 +7,7 @@ let getName = (k) => {
     if (k === "pnk") { return "Plemię"}
     if (k === "cl") { return "Ciemny Las"}
     if (k === "gk") { return "Gwiezdny Klan"}
-    else { return "Bład - skontaktuj się z Nath"}
+    else { return "Bład - skontaktuj się z Nath" }
 }
 
 let makeCard = (p) => {
@@ -24,7 +24,9 @@ let makeCard = (p) => {
     zdj.style=`background-image: url(${p.avek});`;
 
     imie.innerText = p.imie;
+    imie.style = `color:${p.klan}`
     klan.innerText = getName(p.klan);
+    klan.style = `color:${p.klan}`;
     plec.innerText = p.plec;
     ranga.innerText = p.ranga;
 
