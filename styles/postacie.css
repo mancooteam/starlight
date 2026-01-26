@@ -2,13 +2,16 @@
     display: flex;
     gap: 10px;
     flex-wrap: wrap;
+    padding: 30px;
+    width: fit-content;
+    margin: auto;
 }
 
 postac {
     background-color: var(--tlo3);
     width: fit-content;
     padding: 20px;
-    display: flex;
+    border: 1px solid var(--tlo3);
 }
 
 zdj {

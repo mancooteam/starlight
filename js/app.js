@@ -1,3 +1,15 @@
+let makeName = (k) => {
+    if (k === "cien") { return "Klan Cienia"}
+    if (k === "grom") { return "Klan Gromu"}
+    if (k === "rzeka") { return "Klan Rzeki"}
+    if (k === "wicher") { return "Klan Wichru"}
+    if (k === "samotnik") { return "Samotnik"}
+    if (k === "plemie") { return "Plemię"}
+    if (k === "cl") { return "Ciemny Las"}
+    if (k === "gk") { return "Gwiezdny Klan"}
+    else { return "Bład - skontaktuj się z Nath"}
+}
+
 let makeCard = (p) => {
     let main = document.getElementById("spis");
     let card = document.createElement("postac");
@@ -12,12 +24,14 @@ let makeCard = (p) => {
     zdj.style=`background-image: url(${p.avek});`;
 
     imie.innerText = p.imie;
-    klan.innerText = p.klan;
+    klan.innerText = getName(p.klan);
     plec.innerText = p.plec;
     ranga.innerText = p.ranga;
 
     info.append(imie,klan,plec,ranga,linki);
     card.append(zdj,info);
+
+    card.style = `border: 2px solid var(--${p.klan})`;
 
     main.appendChild(card);
 }
