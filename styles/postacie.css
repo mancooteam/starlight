@@ -34,6 +34,7 @@ imie {
     text-transform: uppercase;
     text-align: center;
     font-weight: bold;
+    font-family: "Poppins", sans-serif;
 }
 
 plec {
@@ -45,6 +46,7 @@ plec {
 klan {
     display: block;
     text-transform: uppercase;
+    font-family: "Poppins", sans-serif;
 }
 
 ranga {
