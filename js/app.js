@@ -27,9 +27,11 @@ document.addEventListener('DOMContentLoaded', async () => {
                 makeCard(p);
             });
         } else {
+            document.getElementById("noti").innerText = postacie.data;
             console.error(postacie.data);
         }
     } catch (error) {
         console.error("Error" + error);
+        ocument.getElementById("noti").innerText = error;
     }
 })
