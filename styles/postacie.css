@@ -65,3 +65,7 @@ banner {
     height: 1vh;
     background-image: url("../img/banner.png");
 }
+
+linki {
+    float: right;
+}
