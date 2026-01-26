@@ -23,6 +23,9 @@ document.addEventListener('DOMContentLoaded', async () => {
                 "Content-Type": "application/json"
             }
         });
+        if (!res.ok) {
+            console.error(res.text);
+        }
         const postacie = await res.json();
         if(postacie.valid) {
             console.log(postacie.data);
