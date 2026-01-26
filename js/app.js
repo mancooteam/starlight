@@ -4,11 +4,12 @@ let makeCard = (p) => {
     let zdj = document.createElement("zdj");
     let info = document.createElement("info");
     let imie = document.createElement("imie");
+    imie.innerText = p.imie;
     let klan = document.createElement("klan");
+    klan.innerText = p.klan;
     let plec = document.createElement("plec");
     let ranga = document.createElement("ranga");
     let linki = document.createElement("linki");
-
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
