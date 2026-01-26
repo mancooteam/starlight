@@ -17,19 +17,14 @@ let makeCard = (p) => {
     ranga.innerText = p.ranga;
 
     info.append(imie,klan,plec,ranga,linki);
-    postac.append(zdj,info);
+    card.append(zdj,info);
 
     main.appendChild(card);
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
     try {
-        const res = await fetch("../api/postacie.php", {
-            method: "GET",
-            headers: {
-                "Content-Type": "application/json"
-            }
-        });
+        const res = await fetch("../api/postacie.php");
         if (!res.ok) {
             console.error(res.text);
         }
