@@ -1,4 +1,4 @@
-let makeName = (k) => {
+let getName = (k) => {
     if (k === "cien") { return "Klan Cienia"}
     if (k === "grom") { return "Klan Gromu"}
     if (k === "rzeka") { return "Klan Rzeki"}
