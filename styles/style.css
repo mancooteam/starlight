@@ -10,6 +10,15 @@ body {
     font-size: 14px;
 }
 
+banner {
+    display: block;
+    width: 100%;
+    height: 346px;
+    background-image: url(../img/banner.png);
+    background-position-y: -89px;
+    background-size: cover;
+}
+
 nav {
     background-color: var(--tlo4);
     padding: 10px 7px;
@@ -89,9 +98,9 @@ nav a {
     --tlo3: #242424;
     --tlo4: #1C1C1C;
     --tekst: #bdbdbd;
-    --em1: #C1D48E;
-    --em2: #96C433;
-    --em3: #a5c462;
+    --em1: #9d996f;
+    --em2: #82ad68;
+    --em3: #84855e;
     --grom:#FFCE7A;
     --cien:#E38F9C;
     --rzeka:#7898FF;
