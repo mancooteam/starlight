@@ -4,7 +4,7 @@ let getName = (k) => {
     if (k === "rzeka") { return "Klan Rzeki"}
     if (k === "wicher") { return "Klan Wichru"}
     if (k === "samotnik") { return "Samotnik"}
-    if (k === "plemie") { return "Plemię"}
+    if (k === "pnk") { return "Plemię"}
     if (k === "cl") { return "Ciemny Las"}
     if (k === "gk") { return "Gwiezdny Klan"}
     else { return "Bład - skontaktuj się z Nath"}
