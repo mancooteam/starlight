@@ -24,9 +24,9 @@ let makeCard = (p) => {
     zdj.style=`background-image: url(${p.avek});`;
 
     imie.innerText = p.imie;
-    imie.style = `color:${p.klan}`
+    imie.style = `color: `
     klan.innerText = getName(p.klan);
-    klan.style = `color:${p.klan}`;
+    klan.style = `color: var(--${p.klan})`;
     plec.innerText = p.plec;
     ranga.innerText = p.ranga;
 
