@@ -91,6 +91,24 @@ nav a {
     font-size: 12px;
 }
 
+button {
+    background-color: var(--em2);
+    padding: 10px 20px;
+    border: solid 1px var(--tlo4);
+    text-transform: uppercase;
+    color: var(--tlo3);
+    font-weight: bold;
+    border-radius: 5px;
+    float: right;
+    margin-right: 17px;
+    box-shadow: 0px 0px 5px var(--tlo4);
+}
+
+button:hover {
+    color: var(--em2);
+    background-color: var(--tlo3);
+}
+
 /** ROOT COLORS **/
 :root {
     --tlo1: #373737;
