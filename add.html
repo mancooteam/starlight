@@ -25,7 +25,43 @@
                     </tr>
                     <tr>
                         <td><b>Płeć</b></td>
-                        <td><input type="text" id="imie" placeholder="np. Szumiący Las"></td>
+                        <td><select name="plec" id="plec">
+                            <option value="kotka">Kotka</option>
+                            <option value="kotka">Kocur</option>
+                            <option value="transplciowa kotka">Transpłciowa kotka</option>
+                            <option value="transplciowy kocur">Transpłciowy kocur</option>
+                            <option value="inna">Inna</option>
+                        </select></td>
+                    </tr>
+                    <tr>
+                        <td><b>Grupa</b></td>
+                        <td><select name="klan" id="klan">
+                            <option value="cien">Klan Cienia</option>
+                            <option value="grom">Klan Gromu</option>
+                            <option value="rzeka">Klan Rzeki</option>
+                            <option value="wicher">Klan Wichru</option>
+                            <option value="samotnik">Samotnik</option>
+                            <option value="pnk">Plemię Niedźwiedzich Kłów</option>
+                            <option value="gk">Gwiezdny Klan</option>
+                            <option value="cl">Ciemny Las</option>
+                            <option value="pwl">Plemię Wiecznych Łowów</option>
+                            <option value="pustka">Pustka</option>
+                        </select></td>
+                    </tr>
+                    <tr>
+                        <td><b>Ranga</b></td>
+                        <td><select name="ranga" id="ranga">
+                            <option value="kocie">Kocię</option>
+                            <option value="terminator">Terminator</option>
+                            <option value="terminator medyka">Terminator medyka</option>
+                            <option value="wojownik">Wojownik</option>
+                            <option value="matka">Matka/Opiekun</option>
+                            <option value="medyk">Medyk</option>
+                            <option value="zastepca">Zastępca</option>
+                            <option value="przywodca">Przywódca</option>
+                            <option value="samotnik">Samotnik</option>
+                            <option value="martwy">Martwy</option>
+                        </select></td>
                     </tr>
                 </table>
                 <submit value="Dodaj" id="submit"></submit>
@@ -36,7 +72,7 @@
     </page>
     <link rel="stylesheet" href="styles/style.css">
     <link rel="stylesheet" href="styles/add.css">
-    <script src="js/app.js"></script>
+    <script src="js/add.js"></script>
 </main>
 </body>
 </html>
