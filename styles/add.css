@@ -1,8 +1,0 @@
-input {
-    background: var(--tlo1);
-    color: var(--tekst);
-    padding: 5px;
-    min-width: 150px;
-    border: solid 1px var(--tlo3);
-    margin: 10px 2px;
-}
