@@ -6,17 +6,13 @@ $method = $_SERVER['REQUEST_METHOD'];
 $userId = $_SESSION['id_uzytkownika'] ?? null;
 
 if ($method === 'GET') {
-    // 1. Pobieranie wszystkich cech do edytora
-    if (isset($_GET['action']) && $_GET['action'] === 'get_all_traits') {
-        echo json_encode($pdo->query("SELECT * FROM st_cechy ORDER BY nazwa ASC")->fetchAll());
-    }
-    // 2. Pobieranie szczegółów jednej postaci
-    elseif (isset($_GET['id'])) {
+    if (isset($_GET['id'])) {
         $stmt = $pdo->prepare("SELECT * FROM st_postacie WHERE id_postaci = ?");
         $stmt->execute([$_GET['id']]);
         $char = $stmt->fetch();
+
         if ($char) {
-            // POBIERANIE CECH: upewnij się, że pobieramy nazwę i typ
+            // Pobieranie cech z nazwą i typem
             $s = $pdo->prepare("SELECT c.id, c.nazwa, c.typ FROM st_cechy c
                                 JOIN st_postacie_cechy pc ON c.id = pc.id_cechy
                                 WHERE pc.id_postaci = ?");
@@ -25,18 +21,16 @@ if ($method === 'GET') {
         }
         echo json_encode($char ?: ['error' => 'Nie znaleziono']);
     }
-    // 3. Pobieranie innych postaci tego samego autora
     elseif (isset($_GET['owner_id'])) {
         $stmt = $pdo->prepare("SELECT id_postaci, imie, url_awatara, ranga, klan FROM st_postacie WHERE id_wlasciciela = ?");
         $stmt->execute([$_GET['owner_id']]);
         echo json_encode($stmt->fetchAll());
     }
-    // 4. Lista główna
     else {
-        echo json_encode($pdo->query("SELECT id_postaci, imie, ranga, klan, url_awatara FROM st_postacie ORDER BY imie ASC")->fetchAll());
+        echo json_encode($pdo->query("SELECT * FROM st_postacie ORDER BY imie ASC")->fetchAll());
     }
 }
-// ... (sekcja POST pozostaje bez zmian) ...
+// Sekcja POST pozostaje bez zmian (obsługuje 18 parametrów)
 
 if ($method === 'POST') {
     if (!$userId) exit(json_encode(['error' => 'Brak autoryzacji']));
