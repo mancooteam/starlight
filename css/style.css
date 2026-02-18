@@ -80,3 +80,19 @@ body { background: var(--tlo4); color: var(--tekst); font-family: 'Poppins', san
 .badge-prey { background-color: #28a745; color: white; }
 .badge-enemy { background-color: #dc3545; color: white; }
 .badge-surprise { background-color: #fd7e14; color: white; }
+
+/* Stylizacja Walki */
+.text-critical { color: #ff00ff; text-shadow: 0 0 10px rgba(255, 0, 255, 0.5); font-weight: 800; }
+.text-bleeding { color: #ff4d4d; animation: pulse-blood 2s infinite; }
+.combat-log { font-family: 'monospace'; font-size: 0.85rem; background: rgba(0,0,0,0.5); padding: 10px; border-radius: 5px; margin-top: 10px; text-align: left; }
+
+@keyframes pulse-blood {
+    0% { opacity: 1; }
+    50% { opacity: 0.6; }
+    100% { opacity: 1; }
+}
+
+.badge-hit { background: #28a745; }
+.badge-weak { background: #ffc107; color: #000; }
+.badge-fail { background: #dc3545; }
+.badge-crit { background: #6f42c1; }

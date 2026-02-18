@@ -1,128 +1,134 @@
-let allCharacters = [];
-let selectedChar = null;
+let selectedPostac = null;
+const ATTR_MODS = [0, 0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 5, 5, 5, 5, 5, 6, 6, 6, 6, 6, 6, 7, 7, 7, 7, 7, 7, 7, 8, 8, 8, 8, 8, 8, 8, 9, 9, 9, 9, 9, 9, 9, 10, 10, 10, 10, 10, 10, 10, 10, 11, 11, 11, 11, 11, 11, 11, 11];
 
 document.addEventListener('DOMContentLoaded', async () => {
-    // 1. Pobierz wszystkie postacie
     const res = await fetch('api/characters.php');
-    allCharacters = await res.json();
+    const chars = await res.json();
+    const sel = document.getElementById('char-selector');
+    sel.innerHTML = '<option value="">--- Wybierz postać ---</option>' +
+        chars.map(c => `<option value="${c.id_postaci}">${c.imie}</option>`).join('');
 
-    const selector = document.getElementById('char-selector');
-    selector.innerHTML += allCharacters.map(c => `<option value="${c.id_postaci}">${c.imie} (${c.klan})</option>`).join('');
-
-    selector.addEventListener('change', e => {
-        selectedChar = allCharacters.find(c => c.id_postaci === e.target.value);
-        if (selectedChar) loadCharDetails();
+    sel.addEventListener('change', async (e) => {
+        if(!e.target.value) return;
+        const r = await fetch(`api/characters.php?id=${e.target.value}`);
+        selectedPostac = await r.json();
+        calculateBonuses();
     });
 });
 
-async function loadCharDetails() {
-    // Pobierz pełne dane (z cechami)
-    const res = await fetch(`api/characters.php?id=${selectedChar.id_postaci}`);
-    selectedChar = await res.json();
-
-    document.getElementById('char-mini-stats').innerHTML = `
-        Poziom: ${selectedChar.poziom || 1} | Zr: ${selectedChar.zrecznosc} | Sz: ${selectedChar.szybkosc}
-    `;
-    updateBonuses();
+function updateUI() {
+    const mode = document.getElementById('action-mode').value;
+    const combatBox = document.getElementById('combat-inputs');
+    // Pokaż pola przeciwnika tylko przy ataku/obrażeniach
+    combatBox.className = (['atak', 'blok', 'unik'].includes(mode)) ? 'd-block' : 'd-none';
+    calculateBonuses();
 }
 
-function updateBonuses() {
-    if (!selectedChar) return;
+function getStatMod(val) {
+    return ATTR_MODS[Math.min(val, 70)] || 0;
+}
 
-    const action = document.getElementById('action-type').value;
-    const terrain = document.getElementById('terrain-type').value;
-    const time = document.getElementById('time-type').value;
+function calculateBonuses() {
+    if(!selectedPostac) return;
+    const mode = document.getElementById('action-mode').value;
+    const traits = selectedPostac.cechy ? selectedPostac.cechy.map(t => t.nazwa) : [];
 
-    let bonuses = [];
+    let mods = [];
     let total = 0;
 
-    // 1. Poziom Postaci
-    const level = parseInt(selectedChar.poziom) || 1;
-    bonuses.push({ name: 'Poziom', val: level });
-    total += level;
+    // Podstawowe statystyki
+    if (mode === 'atak') total += getStatMod(selectedPostac.zrecznosc);
+    if (mode === 'blok') total += getStatMod(selectedPostac.odpornosc);
+    if (mode === 'unik') total += getStatMod(selectedPostac.szybkosc);
+    if (mode === 'zaskoczenie') total += (parseInt(selectedPostac.u_skradanie) === 1 ? 1 : (parseInt(selectedPostac.u_skradanie) === 2 ? 3 : (parseInt(selectedPostac.u_skradanie) === 3 ? 5 : 0)));
 
-    // 2. Umiejętności
-    const skillMap = { 0: 0, 1: 1, 2: 3, 3: 5 };
-    if (action === 'polowanie') {
-        const val = skillMap[selectedChar.u_tropienie] || 0;
-        bonuses.push({ name: 'Tropienie', val: val });
-        total += val;
-    } else if (action === 'lowienie') {
-        const val = skillMap[selectedChar.u_lowienie] || 0;
-        bonuses.push({ name: 'Łowienie', val: val });
-        total += val;
-    } else if (action === 'schwytanie') {
-        const val = skillMap[selectedChar.u_skradanie] || 0;
-        bonuses.push({ name: 'Skradanie', val: val });
-        total += val;
-        // Modyfikator Zręczności
-        const zrBonus = getAttrMod(selectedChar.zrecznosc, 'zr');
-        bonuses.push({ name: 'Bonus Zręczności', val: zrBonus });
-        total += zrBonus;
-    } else if (action === 'pogon') {
-        const szBonus = getAttrMod(selectedChar.szybkosc, 'sz');
-        bonuses.push({ name: 'Bonus Szybkości', val: szBonus });
-        total += szBonus;
-    }
+    // Modyfikatory Cech
+    if (traits.includes('Cichy krok') && ['schwytanie', 'zaskoczenie'].includes(mode)) { mods.push("Cichy krok (+3)"); total += 3; }
+    if (traits.includes('Ciężki krok') && ['schwytanie', 'zaskoczenie'].includes(mode)) { mods.push("Ciężki krok (-3)"); total -= 3; }
+    if (traits.includes('Sokoli wzrok') && ['atak', 'unik'].includes(mode)) { mods.push("Sokoli wzrok (+2)"); total += 2; }
+    if (traits.includes('Kulawa noga') && ['atak', 'unik', 'ucieczka'].includes(mode)) { mods.push("Kulawa noga (-3)"); total -= 3; }
+    if (traits.includes('Zapaśnik') && mode === 'blok') { mods.push("Zapaśnik (+2)"); total += 2; }
 
-    // 3. Cechy (Logika dynamiczna)
-    const charTraits = selectedChar.cechy ? selectedChar.cechy.map(t => t.nazwa) : [];
-
-    if (charTraits.includes('Psi węch')) { bonuses.push({ name: 'Psi węch', val: 2 }); total += 2; }
-    if (charTraits.includes('Sokoli wzrok')) { bonuses.push({ name: 'Sokoli wzrok', val: 2 }); total += 2; }
-    if (charTraits.includes('Króliczy słuch')) { bonuses.push({ name: 'Króliczy słuch', val: 3 }); total += 3; }
-
-    if (time === 'noc' && charTraits.includes('Nocny łowca')) { bonuses.push({ name: 'Nocny łowca (Noc)', val: 2 }); total += 2; }
-    if (time === 'dzien' && charTraits.includes('Nocny łowca')) { bonuses.push({ name: 'Nocny łowca (Dzień)', val: -2 }); total -= 2; }
-
-    if (terrain === 'las' && charTraits.includes('Leśny cień')) { bonuses.push({ name: 'Leśny cień (Teren)', val: 1 }); total += 1; }
-    if (terrain === 'rzeka' && charTraits.includes('Ryba w wodzie')) { bonuses.push({ name: 'Ryba w wodzie (Teren)', val: 1 }); total += 1; }
-
-    // Renderowanie sugestii
-    document.getElementById('bonus-list').innerHTML = bonuses.map(b =>
-        `<span class="bonus-tag">${b.name}: ${b.val >= 0 ? '+' : ''}${b.val}</span>`
-    ).join('');
-    document.getElementById('total-bonus').innerText = (total >= 0 ? '+' : '') + total;
-    window.currentTotalBonus = total;
+    document.getElementById('bonus-tags').innerHTML = mods.map(m => `<span class="badge bg-secondary">${m}</span>`).join('');
+    document.getElementById('total-modifier').innerText = (total >= 0 ? '+' : '') + total;
+    return total;
 }
 
-function getAttrMod(val, type) {
-    val = parseInt(val) || 0;
-    if (type === 'zr') {
-        if (val <= 4) return 0; if (val <= 8) return 1; if (val <= 12) return 2;
-        if (val <= 17) return 3; if (val <= 22) return 4; if (val <= 27) return 5;
-        return 6; // uproszczone na potrzeby przykładu
-    }
-    if (type === 'sz') {
-        if (val <= 4) return 0; if (val <= 7) return 1; if (val <= 10) return 2;
-        if (val <= 14) return 3; return 4;
-    }
-    return 0;
+function rollD6(num) {
+    let sum = 0;
+    for(let i=0; i<num; i++) sum += Math.floor(Math.random()*6)+1;
+    return sum;
 }
 
-function interpretResult() {
-    const dice = parseInt(document.getElementById('roll-input').value);
-    if (isNaN(dice)) return alert("Wpisz wynik rzutu!");
+function processGMAction() {
+    const roll = parseInt(document.getElementById('mg-roll').value);
+    if(isNaN(roll)) return alert("Wpisz wynik rzutu!");
 
-    const action = document.getElementById('action-type').value;
-    const finalScore = dice + window.currentTotalBonus;
-    const box = document.getElementById('interpretation-box');
+    const mode = document.getElementById('action-mode').value;
+    const bonus = calculateBonuses();
+    const final = roll + bonus;
+    const display = document.getElementById('result-display');
 
-    let resultHtml = `<div class="p-3"><div class="small text-muted mb-1">Wynik końcowy: ${finalScore}</div>`;
+    let html = `<div class="w-100">`;
 
-    if (action === 'polowanie' || action === 'lowienie') {
-        const map = {
-            0: "NIC", 1: "NIESPODZIANKA", 2: "PRZECIWNIK", 3: "PRZECIWNIK", 4: "NIC", 5: "ZWIERZYNA",
-            9: "ZWIERZYNA", 11: "PRZECIWNIK", 13: "ZWIERZYNA", 15: "NIESPODZIANKA", 16: "ZWIERZYNA", 17: "ZWIERZYNA", 20: "ZWIERZYNA"
-        };
-        let status = finalScore >= 30 ? "ZWIERZYNA" : (map[finalScore] || "NIC");
-        resultHtml += `<h1 class="fw-bold ${status === 'NIC' ? 'text-secondary' : 'text-success'}">${status}</h1>`;
-    } else {
-        // Logika dla Schwytania/Pogoni
-        if (finalScore <= 8) resultHtml += `<h1 class="text-danger">PORAŻKA (UCIEKŁO)</h1>`;
-        else if (finalScore <= 15) resultHtml += `<h1 class="text-warning">POGOŃ TRWA</h1>`;
-        else resultHtml += `<h1 class="text-success">SUKCES!</h1>`;
+    if (mode === 'zaskoczenie') {
+        const success = final >= 10;
+        html += `<h2 class="${success ? 'text-success' : 'text-danger'}">${success ? 'ZASKOCZENIE UDANE' : 'NIEUDANE'}</h2>`;
+        html += `<p>Wynik: ${final} (Rzut: ${roll} + Bonus: ${bonus})</p>`;
+    }
+    else if (['atak', 'blok', 'unik'].includes(mode)) {
+        let quality = "Porażka";
+        let badge = "badge-fail";
+        if (final >= 19) { quality = "KRYTYCZNY"; badge = "badge-crit"; }
+        else if (final >= 13) { quality = "UDANY"; badge = "badge-hit"; }
+        else if (final >= 9) { quality = "SŁABY (50%)"; badge = "badge-weak"; }
+
+        html += `<span class="badge ${badge} fs-5 mb-2">${quality}</span>`;
+        html += `<h3>Wynik Celności: ${final}</h3>`;
+
+        if (final >= 9) {
+            const enemyRes = parseInt(document.getElementById('enemy-def').value) || 0;
+            const dmg = calculateDamage(quality, enemyRes);
+            html += `<hr class="border-secondary"><div class="mt-3">${dmg.html}</div>`;
+        }
     }
 
-    box.innerHTML = resultHtml + `</div>`;
+    display.innerHTML = html + `</div>`;
+}
+
+function calculateDamage(quality, enemyRes) {
+    const s = parseInt(selectedPostac.sila) || 0;
+    const rollsAtk = rollD6(6);
+    const rollsDef = (quality === "KRYTYCZNY") ? rollD6(1) : rollD6(4);
+    const defVal = (quality === "KRYTYCZNY") ? (rollsDef + (enemyRes * 0.5)) : (rollsDef + enemyRes);
+
+    let baseDmg = (rollsAtk + s) - defVal;
+    if (quality.includes("SŁABY")) baseDmg = Math.floor(baseDmg * 0.5);
+
+    // Modyfikatory punktów czułych
+    const isSensitive = document.getElementById('hit-sensitive').checked;
+    if (isSensitive) baseDmg += 5;
+
+    let wound = "Nieznaczne obrażenia";
+    let bleed = 0;
+
+    if (baseDmg >= 50) { wound = "Rana 4 Stopnia (Ciężka)"; bleed = isSensitive ? 6 : 5; }
+    else if (baseDmg >= 40) { wound = "Rana 4 Stopnia"; bleed = isSensitive ? 6 : 5; }
+    else if (baseDmg >= 30) { wound = "Rana 3 Stopnia"; bleed = isSensitive ? 4 : 3; }
+    else if (baseDmg >= 20) { wound = "Rana 2 Stopnia"; bleed = isSensitive ? 3 : 2; }
+    else if (baseDmg >= 10) { wound = "Rana 1 Stopnia"; bleed = 1; }
+
+    return {
+        val: baseDmg,
+        html: `
+            <div class="dice-box">
+                <div class="fs-1 fw-bold text-white">${baseDmg} PD</div>
+                <div class="text-warning fw-bold">${wound}</div>
+                ${bleed > 0 ? `<div class="text-bleeding small">🩸 Krwawienie: -${bleed} HP/tura</div>` : ''}
+                <div class="combat-log mt-2">
+                    Atak: (6d6[${rollsAtk}] + Siła[${s}]) = ${rollsAtk+s}<br>
+                    Obrona: (Oponent[${enemyRes}] + Rzut Obronny[${rollsDef}]) = ${defVal}
+                </div>
+            </div>`
+    };
 }
