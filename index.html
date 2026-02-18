@@ -2,65 +2,40 @@
 <html lang="pl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Character Hub</title>
+    <title>ST_HUB - Twoje Postacie</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
+<nav class="navbar navbar-expand-lg"><div class="container">
+    <a class="navbar-brand text-white fw-bold" href="index.html">ST_HUB</a>
+    <div id="auth-buttons" class="ms-auto"></div>
+</div></nav>
 
-<nav class="navbar navbar-expand-lg sticky-top">
-    <div class="container">
-        <a class="navbar-brand" href="index.html" style="color: var(--em2); font-weight: 600;">ST_HUB</a>
-        <div class="d-flex" id="auth-buttons">
-        </div>
-    </div>
-</nav>
-
-<header class="py-5 text-center" style="background: linear-gradient(180deg, var(--tlo3) 0%, var(--tlo4) 100%);">
-    <div class="container">
-        <h1 class="display-4" style="color: var(--tekst2);">Witaj w Świecie Postaci</h1>
-        <p class="lead" style="color: var(--tekst);">Przeglądaj, twórz i zarządzaj swoimi unikalnymi bohaterami.</p>
-        <div id="admin-actions" class="mt-4"></div>
-    </div>
+<header class="py-5 text-center bg-dark mb-4">
+    <h1 class="display-5 fw-bold" style="color:var(--tekst2)">Witaj w Świecie Postaci</h1>
+    <div id="admin-actions" class="mt-4"></div>
 </header>
 
-<main class="container my-5">
+<main class="container">
     <div class="row mb-4">
-        <div class="col">
-            <h2 style="color: var(--em1); border-left: 4px solid var(--em2); padding-left: 15px;">Wszystkie Postacie</h2>
-        </div>
-    </div>
-
-    <div class="row mb-4">
-        <div class="col-md-6 mb-3">
+        <div class="col-md-8 mx-auto">
             <input type="text" id="main-search" class="form-control bg-dark text-white border-secondary" placeholder="Szukaj po imieniu lub klanie...">
         </div>
-        <div class="col-md-3 mb-3">
-            <select id="klan-filter" class="form-select bg-dark text-white border-secondary">
-                <option value="all">Wszystkie klany</option>
-            </select>
-        </div>
     </div>
-
-    <div id="character-container" class="row g-4">
-        <div class="text-center py-5">
-            <div class="spinner-border" style="color: var(--em2);" role="status"></div>
-        </div>
-    </div>
+    <div id="character-container" class="row"></div>
 </main>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-<script src="js/main.js"></script>
-<div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 1100;">
-    <div id="liveToast" class="toast align-items-center border-0" role="alert" aria-live="assertive" aria-atomic="true" style="background: var(--tlo2); color: var(--tekst2);">
-        <div class="d-flex">
-            <div class="toast-body" id="toast-message">
-            </div>
-            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
-        </div>
-    </div>
+<div class="toast-container position-fixed bottom-0 end-0 p-3">
+    <div id="liveToast" class="toast bg-dark text-white border-0"><div class="d-flex">
+        <div id="toast-message" class="toast-body"></div>
+        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+    </div></div>
 </div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="js/utils.js"></script>
+<script src="js/main.js"></script>
 </body>
 </html>

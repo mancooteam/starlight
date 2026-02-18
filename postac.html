@@ -2,85 +2,42 @@
 <html lang="pl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Szczegóły Postaci - ST_HUB</title>
+    <title>Profil Postaci - ST_HUB</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/style.css">
-    <style>
-        .stats-bar { height: 10px; border-radius: 5px; background-color: var(--tlo1); overflow: hidden; }
-        .stats-progress { height: 100%; background-color: var(--em2); width: 0%; transition: width 1s ease-in-out; }
-        .trait-badge { border: 1px solid rgba(255,255,255,0.1); padding: 5px 12px; border-radius: 20px; font-size: 0.85rem; margin-bottom: 5px; display: inline-block; }
-        .author-card { background: var(--tlo3); border: var(--border); transition: 0.2s; text-decoration: none; color: inherit; }
-        .author-card:hover { border-color: var(--em2); background: var(--tlo1); }
-    </style>
 </head>
 <body>
+<nav class="navbar navbar-expand-lg"><div class="container">
+    <a class="navbar-brand text-white" href="index.html">ST_HUB</a>
+    <a href="index.html" class="btn btn-sm btn-outline-light">← Powrót</a>
+</div></nav>
 
-<nav class="navbar navbar-expand-lg">
-    <div class="container">
-        <a class="navbar-brand" href="index.html" style="color: var(--em2); font-weight: 600;">ST_HUB</a>
-        <a href="index.html" class="btn btn-sm btn-outline-light">← Powrót do listy</a>
-    </div>
-</nav>
-
-<div class="container my-5">
-    <div id="loading-spinner" class="text-center py-5">
-        <div class="spinner-border" style="color: var(--em2);" role="status"></div>
-    </div>
-
-    <div id="character-content" class="row d-none">
+<div class="container my-5" id="char-profile">
+    <div class="row d-none" id="content">
         <div class="col-lg-4 mb-4">
-            <div class="card p-3 text-center" style="background: var(--tlo2); border: var(--border);">
-                <img id="char-avatar" src="" class="img-fluid rounded mb-3" style="max-height: 400px; object-fit: cover; border: var(--border);">
-                <h2 id="char-name" style="color: var(--em2);"></h2>
-                <p id="char-basic-info" class="text-muted"></p>
-                <div id="edit-button-container" class="mt-3"></div>
+            <div class="card p-3 text-center" id="profile-accent-card">
+                <img id="char-avatar" class="img-fluid rounded mb-3" style="max-height:400px; object-fit:cover;">
+                <h2 id="char-name" style="color:var(--em2)"></h2>
+                <p id="char-basic" class="text-muted"></p>
+                <div id="edit-btn-box"></div>
             </div>
-
-            <div class="card mt-4 p-3" style="background: var(--tlo2); border: var(--border);">
-                <h5 style="color: var(--em1);">Inne postacie autora</h5>
-                <div id="other-chars-list" class="mt-2">
-                </div>
+            <div class="card mt-4 p-3">
+                <h6 style="color:var(--em1)">Inne postacie autora</h6>
+                <div id="other-chars" class="small mt-2"></div>
             </div>
         </div>
-
         <div class="col-lg-8">
-            <div class="card p-4 mb-4" style="background: var(--tlo2); border: var(--border);">
-                <h4 style="color: var(--em1);">Opis Postaci</h4>
-                <p id="char-description" style="white-space: pre-line;"></p>
-            </div>
-
+            <div class="card p-4 mb-4"><h5>Opis</h5><p id="char-desc"></p></div>
             <div class="row">
-                <div class="col-md-6 mb-4">
-                    <div class="card p-4 h-100" style="background: var(--tlo2); border: var(--border);">
-                        <h4 class="mb-4" style="color: var(--em1);">Statystyki</h4>
-                        <div id="stats-container">
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-md-6 mb-4">
-                    <div class="card p-4 h-100" style="background: var(--tlo2); border: var(--border);">
-                        <h4 class="mb-4" style="color: var(--em1);">Cechy</h4>
-                        <div id="traits-container">
-                        </div>
-                    </div>
-                </div>
+                <div class="col-md-6 mb-4"><div class="card p-4 h-100"><h5>Statystyki</h5><div id="stats-box"></div></div></div>
+                <div class="col-md-6 mb-4"><div class="card p-4 h-100"><h5>Cechy</h5><div id="traits-box"></div></div></div>
             </div>
         </div>
     </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="js/utils.js"></script>
 <script src="js/postac.js"></script>
-<div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 1100;">
-    <div id="liveToast" class="toast align-items-center border-0" role="alert" aria-live="assertive" aria-atomic="true" style="background: var(--tlo2); color: var(--tekst2);">
-        <div class="d-flex">
-            <div class="toast-body" id="toast-message">
-            </div>
-            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
-        </div>
-    </div>
-</div>
 </body>
 </html>

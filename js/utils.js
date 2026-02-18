@@ -1,30 +1,20 @@
-/**
- * ST_HUB Utils - Uniwersalne funkcje pomocnicze
- */
+const Groups = ["Klan Cienia", "Klan Wichru", "Klan Rzeki", "Klan Gromu", "Plemię Niedźwiedzich Kłów", "Plemię Wiecznych Łowów", "Gwiezdny Klan", "Nieaktywny", "Ciemny Las", "Pustka", "Npc", "Samotnik", "Bractwo Krwi"];
+const Ranks = ["Kocię", "Terminator", "Terminator Medyka", "Nowicjusz", "Wojownik", "Łowca", "Strażnik", "Matka/Opiekun", "Przywódca", "Zastępca", "Wieszcz Promieni Słońca", "Wieszcz Blasku Księżyca", "Samotnik", "Gwiezdny", "Martwy", "Ciemny Las"];
 
-/**
- * Wyświetla powiadomienie Toast (Bootstrap 5)
- * @param {string} message - Treść komunikatu
- * @param {string} type - 'success' (zielony), 'danger' (czerwony), 'warning' (żółty)
- */
-function showToast(message, type = 'success') {
-    const toastEl = document.getElementById('liveToast');
-    const messageEl = document.getElementById('toast-message');
+function showToast(msg, type = 'success') {
+    const t = document.getElementById('liveToast');
+    const m = document.getElementById('toast-message');
+    t.style.borderLeft = `5px solid ${type === 'danger' ? '#CA4250' : 'var(--em2)'}`;
+    m.innerText = msg;
+    new bootstrap.Toast(t).show();
+}
 
-    if (!toastEl || !messageEl) {
-        console.warn("Nie znaleziono kontenera Toast w HTML. Używam alert: " + message);
-        alert(message);
-        return;
-    }
+function getGroupClass(group) {
+    if (!group) return '';
+    return 'accent-' + group.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, '-');
+}
 
-    // Dobór koloru krawędzi
-    let borderColor = 'var(--em2)';
-    if (type === 'danger') borderColor = '#ff4d4d';
-    if (type === 'warning') borderColor = '#ffc107';
-
-    toastEl.style.borderLeft = `5px solid ${borderColor}`;
-    messageEl.innerText = message;
-
-    const toast = new bootstrap.Toast(toastEl, { delay: 4000 });
-    toast.show();
+async function getAuth() {
+    const r = await fetch('api/auth.php?action=status');
+    return r.json();
 }

@@ -3,51 +3,28 @@
     --tekst: #bdbdbd; --tekst2: #eee;
     --em1: #C1D48E; --em2: #96C433; --em3: #a5c462;
     --border: 1px #1C1C1C solid;
+    /* Akcenty */
+    --c-gwiezdny: #5C5AA6; --c-pustka: #6C8570; --c-wieczni: #886CAB; --c-ciemny: #8F534B;
+    --c-cien: #E38F9C; --c-grom: #FFCE7A; --c-rzeka: #7898FF; --c-wicher: #A3E0D5;
+    --c-bractwo: #CA4250; --c-niedzwiedz: #ffffff; --c-samotnik: #7DBF65; --c-off: #828282;
 }
+body { background: var(--tlo4); color: var(--tekst); font-family: 'Poppins', sans-serif; font-size: 14px; }
+.navbar { background: var(--tlo3); border-bottom: var(--border); }
+.card { background: var(--tlo2); border: var(--border); color: var(--tekst2); }
+.character-card { transition: 0.3s; cursor: pointer; border-top: 5px solid transparent; }
+.character-card:hover { transform: translateY(-5px); }
+.stats-bar { height: 8px; background: var(--tlo4); border-radius: 4px; overflow: hidden; }
+.stats-fill { height: 100%; background: var(--em2); }
+.trait-badge { border: 1px solid; border-radius: 20px; padding: 2px 10px; font-size: 0.75rem; margin: 2px; display: inline-block; }
 
-body {
-    background-color: var(--tlo4);
-    color: var(--tekst);
-    font-family: 'Poppins', sans-serif;
-    font-size: 14px;
-}
-
-.navbar {
-    background-color: var(--tlo3);
-    border-bottom: var(--border);
-}
-
-.character-card {
-    background-color: var(--tlo2);
-    border: var(--border);
-    transition: transform 0.2s;
-}
-
-.character-card:hover {
-    transform: translateY(-5px);
-    border-color: var(--em3);
-}
-
-.character-icon {
-    height: 200px;
-    object-fit: cover;
-    border-bottom: var(--border);
-}
-
-.btn-primary { background-color: var(--em2); color: var(--tlo4); font-weight: 600; }
-.btn-primary:hover { background-color: var(--em1); }
-
-/* Custom Scrollbar */
-::-webkit-scrollbar { width: 8px; }
-::-webkit-scrollbar-thumb { background: #7e7e7f; border-radius: 10px; }
-
-.toast {
-    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-    font-family: 'Poppins', sans-serif;
-    border: var(--border) !important;
-}
-
-.toast-body {
-    padding: 1rem;
-    font-weight: 400;
-}
+.accent-gwiezdny-klan { border-color: var(--c-gwiezdny) !important; }
+.accent-pustka { border-color: var(--c-pustka) !important; }
+.accent-plemie-wiecznych-lowow { border-color: var(--c-wieczni) !important; }
+.accent-ciemny-las { border-color: var(--c-ciemny) !important; }
+.accent-klan-cienia { border-color: var(--c-cien) !important; }
+.accent-klan-gromu { border-color: var(--c-grom) !important; }
+.accent-klan-rzeki { border-color: var(--c-rzeka) !important; }
+.accent-klan-wichru { border-color: var(--c-wicher) !important; }
+.accent-bractwo-krwi { border-color: var(--c-bractwo) !important; }
+.accent-samotnik { border-color: var(--c-samotnik) !important; }
+.accent-nieaktywny { border-color: var(--c-off) !important; }
