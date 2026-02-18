@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rejestracja - ST_HUB</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        body { height: 100vh; display: flex; align-items: center; justify-content: center; }
+        .auth-card { width: 100%; max-width: 450px; background: var(--tlo2); border: var(--border); padding: 30px; border-radius: 8px; }
+    </style>
+</head>
+<body>
+
+<div class="auth-card">
+    <div class="text-center mb-4">
+        <h2 style="color: var(--em2); font-weight: 600;">ST_HUB</h2>
+        <p class="text-muted">Stwórz nowe konto</p>
+    </div>
+
+    <div id="alert-container"></div>
+
+    <form id="register-form">
+        <div class="mb-3">
+            <label class="form-label">Nazwa użytkownika</label>
+            <input type="text" name="username" class="form-control bg-dark text-white border-secondary" required minlength="3">
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Link do awatara (URL)</label>
+            <input type="url" name="url_awatara" class="form-control bg-dark text-white border-secondary" placeholder="https://...">
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Hasło</label>
+            <input type="password" name="password" id="pass" class="form-control bg-dark text-white border-secondary" required minlength="6">
+        </div>
+        <div class="mb-4">
+            <label class="form-label">Powtórz hasło</label>
+            <input type="password" id="pass_confirm" class="form-control bg-dark text-white border-secondary" required>
+        </div>
+        <button type="submit" class="btn btn-primary w-100 mb-3">Zarejestruj się</button>
+        <div class="text-center">
+            <span class="small text-muted">Masz już konto? <a href="login.html" style="color: var(--em1);">Zaloguj się</a></span>
+        </div>
+    </form>
+</div>
+
+<script>
+    document.getElementById('register-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const pass = document.getElementById('pass').value;
+        const confirm = document.getElementById('pass_confirm').value;
+        const alertContainer = document.getElementById('alert-container');
+
+        if (pass !== confirm) {
+            alertContainer.innerHTML = `<div class="alert alert-warning py-2 small">Hasła nie są identyczne!</div>`;
+            return;
+        }
+
+        const formData = new FormData(e.target);
+
+        try {
+            const res = await fetch('api/auth.php?action=register', {
+                method: 'POST',
+                body: formData
+            });
+            const result = await res.json();
+
+            if (result.success) {
+                alertContainer.innerHTML = `<div class="alert alert-success py-2 small">${result.success} Za chwilę zostaniesz przekierowany...</div>`;
+                setTimeout(() => window.location.href = 'login.html', 2000);
+            } else {
+                alertContainer.innerHTML = `<div class="alert alert-danger py-2 small">${result.error}</div>`;
+            }
+        } catch (err) {
+            alertContainer.innerHTML = `<div class="alert alert-danger py-2 small">Błąd połączenia.</div>`;
+        }
+    });
+</script>
+<div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 1100;">
+    <div id="liveToast" class="toast align-items-center border-0" role="alert" aria-live="assertive" aria-atomic="true" style="background: var(--tlo2); color: var(--tekst2);">
+        <div class="d-flex">
+            <div class="toast-body" id="toast-message">
+            </div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+    </div>
+</div>
+</body>
+</html>
