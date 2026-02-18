@@ -2,97 +2,53 @@
 <html lang="pl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Profil Postaci - ST_HUB</title>
+    <title>Profil - ST_HUB</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-<nav class="navbar navbar-expand-lg"><div class="container">
-    <a class="navbar-brand text-white fw-bold" href="index.html">ST_HUB</a>
-    <a href="index.html" class="btn btn-sm btn-outline-light ms-auto">← POWRÓT</a>
-</div></nav>
-
+<nav class="navbar navbar-expand-lg"><div class="container"><a class="navbar-brand text-white fw-bold" href="index.html">ST_HUB</a><a href="index.html" class="btn btn-sm btn-outline-light ms-auto">← Powrót</a></div></nav>
 <div class="container my-5">
     <div id="loading-spinner" class="text-center py-5"><div class="spinner-border text-success"></div></div>
-
     <div id="character-content" class="row d-none">
         <div class="col-lg-4">
-            <div class="card p-3 text-center mb-4" id="profile-accent-card" style="border-top: 8px solid transparent;">
-                <img id="char-avatar" src="" class="img-fluid rounded mb-3 shadow" style="max-height: 400px; object-fit: cover;">
-                <h2 id="char-name" class="group-name mb-1"></h2>
-                <p id="char-basic" class="text-muted small mb-3"></p>
-                <div id="edit-button-container"></div>
+            <div class="card p-3 text-center" id="profile-accent-card" style="border-top-width: 8px !important;">
+                <img id="char-avatar" class="img-fluid rounded mb-3" style="max-height: 400px; object-fit: cover;">
+                <h2 id="char-name" class="group-name"></h2>
+                <p id="char-basic" class="text-muted"></p>
+                <div id="edit-button-container" class="d-grid gap-2"></div>
             </div>
-
-            <div class="card p-3 mb-4">
-                <h6 class="text-success mb-3">Inne postacie autora</h6>
-                <div id="other-chars-list"></div>
-            </div>
+            <div class="card mt-4 p-3"><h6>Inne postacie autora</h6><div id="other-chars-list"></div></div>
         </div>
-
         <div class="col-lg-8">
-            <div class="card p-4 mb-4 shadow-sm">
-                <h5 class="text-success mb-3">Opis Fabularny</h5>
-                <p id="char-description" style="white-space: pre-wrap; line-height: 1.6;"></p>
+            <div class="card p-4 mb-4">
+                <h5 class="mb-3" style="color: var(--em1)">Opis Fabularny</h5>
+                <p id="char-description" style="white-space: pre-wrap;"></p>
             </div>
 
             <div class="row">
                 <div class="col-md-6 mb-4">
-                    <div class="card p-4 h-100">
-                        <h5 class="text-success mb-4">Atrybuty</h5>
+                    <div class="card p-4 h-100 shadow-sm">
+                        <h5 class="mb-4" style="color: var(--em1)">Atrybuty</h5>
                         <div id="stats-container"></div>
                     </div>
                 </div>
+
                 <div class="col-md-6 mb-4">
-                    <div class="card p-4 h-100">
-                        <h5 class="text-success mb-3">Umiejętności</h5>
+                    <div class="card p-4 h-100 shadow-sm">
+                        <h5 class="mb-3" style="color: var(--em1)">Umiejętności</h5>
                         <div id="skills-container" class="mb-4"></div>
-                        <hr class="border-secondary">
-                        <h5 class="text-success mb-3">Cechy Specjalne</h5>
+
+                        <hr class="border-secondary opacity-25">
+
+                        <h5 class="mb-3" style="color: var(--em1)">Cechy</h5>
                         <div id="traits-container"></div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="card p-4 shadow-sm border-0 mt-2">
-                <h5 class="text-warning mb-4 fw-bold">🎲 Panel Mistrza Gry - Akcje</h5>
-                <div class="row">
-                    <div class="col-md-3 border-end border-secondary border-opacity-25">
-                        <div class="list-group list-group-flush" id="gm-action-menu">
-                            <button class="list-group-item list-group-item-action active" onclick="setGMMode('polowanie')">🐾 Polowanie</button>
-                            <button class="list-group-item list-group-item-action" onclick="setGMMode('lowienie')">🐟 Łowienie Ryb</button>
-                            <button class="list-group-item list-group-item-action" onclick="setGMMode('patrol')">🛡️ Patrol (Granice)</button>
-                        </div>
-                    </div>
-                    <div class="col-md-9 ps-md-4">
-                        <div id="gm-setup-area" class="mb-4">
-                            <h6 class="text-white-50 mb-3">Wybierz teren akcji:</h6>
-                            <div class="hunt-menu" id="terrain-selector">
-                                <button class="terrain-btn" onclick="setTerrain('las_glebia')">🌳 Głębia lasu</button>
-                                <button class="terrain-btn" onclick="setTerrain('las_brzeg')">🌿 Brzeg lasu</button>
-                                <button class="terrain-btn" onclick="setTerrain('rzeka')">💧 Rzeka/Jezioro</button>
-                                <button class="terrain-btn" onclick="setTerrain('laki')">🌻 Łąki/Pola</button>
-                                <button class="terrain-btn" onclick="setTerrain('gory')">🏔️ Góry</button>
-                                <button class="terrain-btn" onclick="setTerrain('domy')">🏠 Okolice domów</button>
-                            </div>
-                        </div>
-
-                        <div id="gm-result-area" class="result-display d-none">
-                        </div>
-
-                        <div id="gm-action-footer" class="text-center mt-3">
-                            <button class="btn btn-success px-5 py-2 fw-bold" id="btn-start-action" onclick="executeHuntRoll()" disabled>
-                                ROZPOCZNIJ POSZUKIWANIA
-                            </button>
-                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
-
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="js/utils.js"></script>
 <script src="js/postac.js"></script>
