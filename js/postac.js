@@ -19,7 +19,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     document.getElementById('profile-accent-card').style.borderTop = `8px solid ${getGroupColor(char.klan)}`;
     document.getElementById('char-avatar').src = char.url_awatara || 'https://via.placeholder.com/400';
     document.getElementById('char-basic').innerText = `${char.ranga} • ${char.klan}`;
+    document.getElementById('char-basic').classList.add('text-secondary');
     document.getElementById('char-description').innerText = char.opis || "Brak opisu.";
+    document.getElementById('char-description').classList.add('text-secondary');
 
     if (auth.loggedIn && (auth.id == char.id_wlasciciela || auth.rola === 'administrator')) {
         document.getElementById('edit-button-container').innerHTML = `<a href="editor.html?id=${char.id_postaci}" class="btn btn-warning btn-sm w-100 fw-bold">EDYTUJ POSTAĆ</a>`;
@@ -27,8 +29,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // 2. Statystyki
     const sDef = [
-        { n: 'Siła', v: char.sila, m: 100 }, { n: 'Zręczność', v: char.zrecznosc, m: 100 },
-        { n: 'Szybkość', v: char.szybkosc, m: 100 }, { n: 'Odporność', v: char.odpornosc, m: 100 },
+        { n: 'Siła', v: char.sila, m: 70 }, { n: 'Zręczność', v: char.zrecznosc, m: 70 },
+        { n: 'Szybkość', v: char.szybkosc, m: 70 }, { n: 'Odporność', v: char.odpornosc, m: 70 },
         { n: 'HP', v: char.hp, m: 300 }, { n: 'Wytrzymałość', v: char.wytrzymalosc, m: 300 }
     ];
     document.getElementById('stats-container').innerHTML = sDef.map(s => `
@@ -43,6 +45,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (char.cechy && char.cechy.length > 0) {
         tBox.innerHTML = char.cechy.map(t => {
             let color = 'var(--em1)';
+            if(t.typ === 'mieszana') color = 'yellow';
             if(t.typ === 'negatywna') color = 'var(--c-bractwo)';
             if(t.typ === 'ciezka_negatywna') color = '#8B0000';
             return `<span class="trait-badge" style="border-color:${color}; color:${color}">${t.nazwa}</span>`;
@@ -69,7 +72,7 @@ async function loadAuthorOtherCharacters(ownerId, currentCharId) {
             <img src="${c.url_awatara || 'https://via.placeholder.com/50'}" style="width:35px; height:35px; object-fit:cover;" class="rounded me-2">
             <div>
                 <div class="small text-white fw-bold">${c.imie}</div>
-                <div class="x-small">${c.ranga}</div>
+                <div class="x-small text-secondary">${c.ranga}</div>
             </div>
         </a>
     `).join('');
