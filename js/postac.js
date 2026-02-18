@@ -60,7 +60,7 @@ async function loadAuthorOtherCharacters(ownerId, currentCharId) {
 
     const filtered = others.filter(c => c.id_postaci !== currentCharId);
     if (filtered.length === 0) {
-        list.innerHTML = '<p class="text-muted small">Brak innych postaci.</p>';
+        list.innerHTML = '<p class="small">Brak innych postaci.</p>';
         return;
     }
 
@@ -69,7 +69,7 @@ async function loadAuthorOtherCharacters(ownerId, currentCharId) {
             <img src="${c.url_awatara || 'https://via.placeholder.com/50'}" style="width:35px; height:35px; object-fit:cover;" class="rounded me-2">
             <div>
                 <div class="small text-white fw-bold">${c.imie}</div>
-                <div class="x-small text-muted">${c.ranga}</div>
+                <div class="x-small">${c.ranga}</div>
             </div>
         </a>
     `).join('');

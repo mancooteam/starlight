@@ -14,7 +14,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     ];
     document.getElementById('stats-inputs').innerHTML = statsDef.map(s => `
         <div class="col-md-4 col-6">
-            <label class="small text-muted">${s.l} (max ${s.m})</label>
+            <label class="small">${s.l} (max ${s.m})</label>
             <input type="number" name="${s.id}" class="form-control bg-dark text-white border-secondary" value="0" min="0" max="${s.m}">
         </div>
     `).join('');
