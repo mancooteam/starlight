@@ -4,7 +4,6 @@ header('Content-Type: application/json');
 
 $method = $_SERVER['REQUEST_METHOD'];
 $userId = $_SESSION['id_uzytkownika'] ?? null;
-$role = $_SESSION['rola'] ?? 'gosc';
 
 if ($method === 'GET') {
     if (isset($_GET['action']) && $_GET['action'] === 'get_all_traits') {
@@ -20,7 +19,8 @@ if ($method === 'GET') {
         }
         echo json_encode($char ?: ['error' => 'Nie znaleziono']);
     } elseif (isset($_GET['owner_id'])) {
-        $stmt = $pdo->prepare("SELECT id_postaci, imie, url_awatara, ranga FROM st_postacie WHERE id_wlasciciela = ?");
+        // Poprawione zapytanie - dodano klan
+        $stmt = $pdo->prepare("SELECT id_postaci, imie, url_awatara, ranga, klan FROM st_postacie WHERE id_wlasciciela = ?");
         $stmt->execute([$_GET['owner_id']]);
         echo json_encode($stmt->fetchAll());
     } else {

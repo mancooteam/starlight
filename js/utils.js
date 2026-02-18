@@ -13,9 +13,18 @@ const GroupConfig = {
     "Plemię Niedźwiedzich Kłów": { color: "#ffffff", class: "txt-plemie-niedzwiedzich-klow" },
     "Bractwo Krwi": { color: "#CA4250", class: "txt-bractwo-krwi" },
     "Samotnik": { color: "#7DBF65", class: "txt-samotnik" },
-    "Nieaktywny": { color: "#828282", class: "txt-nieaktywny" },
-    "Npc": { color: "#7B2CBF", class: "txt-npc" }
+    "Nieaktywny": { color: "#828282", class: "txt-nieaktywny" }
 };
+
+function getGroupStyleClass(group) { return (GroupConfig[group]) ? GroupConfig[group].class : ""; }
+function getGroupColor(group) { return (GroupConfig[group]) ? GroupConfig[group].color : "#96C433"; }
+
+async function getAuth() {
+    try {
+        const r = await fetch('api/auth.php?action=status');
+        return await r.json();
+    } catch(e) { return { loggedIn: false, rola: 'gosc' }; }
+}
 
 function getGroupStyleClass(group) {
     return (GroupConfig[group] && GroupConfig[group].class) ? GroupConfig[group].class : "";
@@ -32,14 +41,4 @@ function showToast(msg, type = 'success') {
     t.style.borderLeft = `5px solid ${type === 'danger' ? '#CA4250' : '#96C433'}`;
     m.innerText = msg;
     new bootstrap.Toast(t).show();
-}
-
-async function getAuth() {
-    try {
-        const r = await fetch('api/auth.php?action=status');
-        return await r.json();
-    } catch(e) {
-        console.error("Auth error:", e);
-        return { loggedIn: false, rola: 'gosc' };
-    }
 }
