@@ -1,6 +1,15 @@
 const Groups = ["Klan Cienia", "Klan Wichru", "Klan Rzeki", "Klan Gromu", "Plemię Niedźwiedzich Kłów", "Plemię Wiecznych Łowów", "Gwiezdny Klan", "Nieaktywny", "Ciemny Las", "Pustka", "Npc", "Samotnik", "Bractwo Krwi"];
 const Ranks = ["Kocię", "Terminator", "Terminator Medyka", "Nowicjusz", "Wojownik", "Łowca", "Strażnik", "Matka/Opiekun", "Przywódca", "Zastępca", "Wieszcz Promieni Słońca", "Wieszcz Blasku Księżyca", "Samotnik", "Gwiezdny", "Martwy", "Ciemny Las"];
 
+const SkillsConfig = [
+    { id: 'u_lowienie', label: 'Łowienie Ryb' },
+    { id: 'u_plywanie', label: 'Pływanie' },
+    { id: 'u_skradanie', label: 'Skradanie się' },
+    { id: 'u_tropienie', label: 'Tropienie' },
+    { id: 'u_wspinaczka', label: 'Wspinaczka' },
+    { id: 'u_zielarstwo', label: 'Zielarstwo' }
+];
+
 const GroupConfig = {
     "Gwiezdny Klan": { color: "#5C5AA6", class: "txt-gwiezdny-klan" },
     "Pustka": { color: "#6C8570", class: "txt-pustka" },
@@ -16,29 +25,6 @@ const GroupConfig = {
     "Nieaktywny": { color: "#828282", class: "txt-nieaktywny" }
 };
 
-function getGroupStyleClass(group) { return (GroupConfig[group]) ? GroupConfig[group].class : ""; }
-function getGroupColor(group) { return (GroupConfig[group]) ? GroupConfig[group].color : "#96C433"; }
-
-async function getAuth() {
-    try {
-        const r = await fetch('api/auth.php?action=status');
-        return await r.json();
-    } catch(e) { return { loggedIn: false, rola: 'gosc' }; }
-}
-
-function getGroupStyleClass(group) {
-    return (GroupConfig[group] && GroupConfig[group].class) ? GroupConfig[group].class : "";
-}
-
-function getGroupColor(group) {
-    return (GroupConfig[group] && GroupConfig[group].color) ? GroupConfig[group].color : "#96C433";
-}
-
-function showToast(msg, type = 'success') {
-    const t = document.getElementById('liveToast');
-    const m = document.getElementById('toast-message');
-    if(!t || !m) return;
-    t.style.borderLeft = `5px solid ${type === 'danger' ? '#CA4250' : '#96C433'}`;
-    m.innerText = msg;
-    new bootstrap.Toast(t).show();
-}
+function getGroupStyleClass(g) { return GroupConfig[g] ? GroupConfig[g].class : ""; }
+function getGroupColor(g) { return GroupConfig[g] ? GroupConfig[g].color : "#96C433"; }
+async function getAuth() { try { const r = await fetch('api/auth.php?action=status'); return await r.json(); } catch(e) { return {loggedIn:false}; } }

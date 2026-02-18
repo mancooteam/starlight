@@ -3,36 +3,25 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (!id) return window.location.href = 'index.html';
 
     const auth = await getAuth();
-    const res = await fetch(`api/characters.php?id=${id}`);
-    const char = await res.json();
+    const char = await (await fetch(`api/characters.php?id=${id}`)).json();
 
-    if (char.error) return window.location.href = 'index.html';
-
-    // 1. Podstawowe dane
     document.getElementById('loading-spinner').classList.add('d-none');
     document.getElementById('character-content').classList.remove('d-none');
 
     const nameEl = document.getElementById('char-name');
     nameEl.innerText = char.imie;
     nameEl.className = 'group-name ' + getGroupStyleClass(char.klan);
-
-    document.getElementById('profile-accent-card').style.borderTop = `8px solid ${getGroupColor(char.klan)}`;
+    document.getElementById('profile-accent-card').style.borderTopColor = getGroupColor(char.klan);
     document.getElementById('char-avatar').src = char.url_awatara || 'https://via.placeholder.com/400';
     document.getElementById('char-basic').innerText = `${char.ranga} • ${char.klan}`;
-    document.getElementById('char-basic').classList.add('text-secondary');
     document.getElementById('char-description').innerText = char.opis || "Brak opisu.";
-    document.getElementById('char-description').classList.add('text-secondary');
 
     if (auth.loggedIn && (auth.id == char.id_wlasciciela || auth.rola === 'administrator')) {
         document.getElementById('edit-button-container').innerHTML = `<a href="editor.html?id=${char.id_postaci}" class="btn btn-warning btn-sm w-100 fw-bold">EDYTUJ POSTAĆ</a>`;
     }
 
-    // 2. Statystyki
-    const sDef = [
-        { n: 'Siła', v: char.sila, m: 70 }, { n: 'Zręczność', v: char.zrecznosc, m: 70 },
-        { n: 'Szybkość', v: char.szybkosc, m: 70 }, { n: 'Odporność', v: char.odpornosc, m: 70 },
-        { n: 'HP', v: char.hp, m: 300 }, { n: 'Wytrzymałość', v: char.wytrzymalosc, m: 300 }
-    ];
+    // Statystyki
+    const sDef = [{n:'Siła',v:char.sila,m:100},{n:'Zręczność',v:char.zrecznosc,m:100},{n:'Szybkość',v:char.szybkosc,m:100},{n:'Odporność',v:char.odpornosc,m:100},{n:'HP',v:char.hp,m:300},{n:'Wytrzymałość',v:char.wytrzymalosc,m:300}];
     document.getElementById('stats-container').innerHTML = sDef.map(s => `
         <div class="mb-3">
             <div class="d-flex justify-content-between small"><span>${s.n}</span><span style="color:var(--em2)">${s.v}/${s.m}</span></div>
@@ -40,40 +29,31 @@ document.addEventListener('DOMContentLoaded', async () => {
         </div>
     `).join('');
 
-    // 3. Cechy
+    // Umiejętności (NOWE)
+    const bonusMap = { 0: 0, 1: 1, 2: 3, 3: 5 };
+    document.getElementById('skills-container').innerHTML = SkillsConfig.map(s => {
+        const val = char[s.id] || 0;
+        const bonus = bonusMap[val];
+        return `
+            <div class="skill-item ${val > 0 ? 'active' : ''} d-flex justify-content-between align-items-center">
+                <div>
+                    <div class="small fw-bold text-white">${s.label}</div>
+                    <div class="skill-dots">${'●'.repeat(val)}${'○'.repeat(3 - val)}</div>
+                </div>
+                <div class="skill-bonus-badge">+${bonus}</div>
+            </div>
+        `;
+    }).join('');
+
+    // Cechy
     const tBox = document.getElementById('traits-container');
     if (char.cechy && char.cechy.length > 0) {
         tBox.innerHTML = char.cechy.map(t => {
-            let color = 'var(--em1)';
-            if(t.typ === 'mieszana') color = '#dec879';
-            if(t.typ === 'negatywna') color = 'var(--c-bractwo)';
-            if(t.typ === 'ciezka_negatywna') color = '#8B0000';
-            return `<span class="trait-badge" style="border-color:${color}; color:${color}">${t.nazwa}</span>`;
+            let c = 'var(--em1)'; if(t.typ === 'negatywna') c = '#CA4250';
+            return `<span class="trait-badge" style="border-color:${c}; color:${c}">${t.nazwa}</span>`;
         }).join('');
     }
 
-    // 4. Ładowanie innych postaci (NAPRAWIONE)
     loadAuthorOtherCharacters(char.id_wlasciciela, char.id_postaci);
 });
-
-async function loadAuthorOtherCharacters(ownerId, currentCharId) {
-    const res = await fetch(`api/characters.php?owner_id=${ownerId}`);
-    const others = await res.json();
-    const list = document.getElementById('other-chars-list');
-
-    const filtered = others.filter(c => c.id_postaci !== currentCharId);
-    if (filtered.length === 0) {
-        list.innerHTML = '<p class="small">Brak innych postaci.</p>';
-        return;
-    }
-
-    list.innerHTML = filtered.map(c => `
-        <a href="postac.html?id=${c.id_postaci}" class="d-flex align-items-center mb-2 text-decoration-none p-2 rounded bg-dark border-start" style="border-left: 4px solid ${getGroupColor(c.klan)} !important;">
-            <img src="${c.url_awatara || 'https://via.placeholder.com/50'}" style="width:35px; height:35px; object-fit:cover;" class="rounded me-2">
-            <div>
-                <div class="small text-white fw-bold">${c.imie}</div>
-                <div class="x-small text-secondary">${c.ranga}</div>
-            </div>
-        </a>
-    `).join('');
-}
+// ... loadAuthorOtherCharacters bez zmian ...

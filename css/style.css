@@ -40,3 +40,13 @@ body { background: var(--tlo4); color: var(--tekst); font-family: 'Poppins', san
 .trait-badge:hover { transform: translateY(-2px); background: rgba(50, 50, 50, 0.8); box-shadow: 0 0 8px currentColor; }
 
 .card {color:white!important;}
+
+.skill-dots { color: var(--em2); letter-spacing: 3px; font-size: 1.1rem; font-family: serif; }
+.skill-item { background: rgba(0,0,0,0.2); padding: 8px 12px; border-radius: 8px; margin-bottom: 5px; border-left: 3px solid transparent; }
+.skill-item.active { border-left-color: var(--em2); background: rgba(150, 196, 51, 0.05); }
+
+.skill-bonus-badge {
+    min-width: 40px; text-align: center; font-weight: bold;
+    background: var(--tlo4); border: 1px solid var(--em2); color: var(--em2);
+    border-radius: 4px; padding: 2px 5px; font-size: 0.8rem;
+}
