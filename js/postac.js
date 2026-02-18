@@ -1,108 +1,85 @@
+let currentChar = null;
+
 document.addEventListener('DOMContentLoaded', async () => {
     const id = new URLSearchParams(window.location.search).get('id');
-    if (!id) return window.location.href = 'index.html';
+    if(!id) return location.href = 'index.html';
 
-    try {
-        const auth = await getAuth();
-        const res = await fetch(`api/characters.php?id=${id}`);
-        const char = await res.json();
+    const auth = await getAuth();
+    const res = await fetch(`api/characters.php?id=${id}`);
+    currentChar = await res.json();
 
-        if (char.error) {
-            console.error("Błąd bazy:", char.error);
-            return window.location.href = 'index.html';
-        }
+    document.getElementById('loading-spinner').classList.add('d-none');
+    document.getElementById('character-content').classList.remove('d-none');
 
-        // UKRYJ SPINNER
-        document.getElementById('loading-spinner').classList.add('d-none');
-        document.getElementById('character-content').classList.remove('d-none');
+    // Render danych podstawowych
+    const nameEl = document.getElementById('char-name');
+    nameEl.innerText = currentChar.imie;
+    nameEl.className = 'group-name ' + getGroupStyleClass(currentChar.klan);
+    document.getElementById('profile-accent-card').style.borderTop = `6px solid ${getGroupColor(currentChar.klan)}`;
+    document.getElementById('char-avatar').src = currentChar.url_awatara || 'https://via.placeholder.com/400';
+    document.getElementById('char-basic').innerText = `${currentChar.ranga} • ${currentChar.klan}`;
+    document.getElementById('char-description').innerText = currentChar.opis;
 
-        // PODSTAWOWE DANE
-        const nameEl = document.getElementById('char-name');
-        nameEl.innerText = char.imie;
-        nameEl.className = 'group-name ' + getGroupStyleClass(char.klan);
+    // Statystyki (Skalowanie 100/300)
+    const stats = [
+        {n: 'Siła', v: currentChar.sila, m: 100},
+        {n: 'Zręczność', v: currentChar.zrecznosc, m: 100},
+        {n: 'HP', v: currentChar.hp, m: 300},
+        {n: 'Wytrzymałość', v: currentChar.wytrzymalosc, m: 300}
+    ];
+    document.getElementById('stats-container').innerHTML = stats.map(s => `
+        <div class="mb-3">
+            <div class="d-flex justify-content-between x-small"><span>${s.n}</span><span>${s.v}/${s.m}</span></div>
+            <div class="stats-bar"><div class="stats-fill" style="width: ${(s.v/s.m)*100}%"></div></div>
+        </div>
+    `).join('');
 
-        document.getElementById('profile-accent-card').style.borderTopColor = getGroupColor(char.klan);
-        document.getElementById('char-avatar').src = char.url_awatara || 'https://via.placeholder.com/400';
-        document.getElementById('char-basic').innerText = `${char.ranga} • ${char.klan}`;
-        document.getElementById('char-description').innerText = char.opis || "Brak opisu.";
+    // Umiejętności (Kropki)
+    const skills = [
+        {l: 'Tropienie', v: currentChar.u_tropienie},
+        {l: 'Skradanie', v: currentChar.u_skradanie},
+        {l: 'Łowienie', v: currentChar.u_lowienie}
+    ];
+    document.getElementById('skills-container').innerHTML = skills.map(s => `
+        <div class="d-flex justify-content-between mb-1">
+            <span class="small">${s.l}</span>
+            <span class="text-success">${'●'.repeat(s.v)}${'○'.repeat(3-s.v)}</span>
+        </div>
+    `).join('');
 
-        // PRZYCISK EDYCJI
-        if (auth.loggedIn && (auth.id == char.id_wlasciciela || auth.rola === 'administrator')) {
-            document.getElementById('edit-button-container').innerHTML =
-                `<a href="editor.html?id=${char.id_postaci}" class="btn btn-warning btn-sm w-100 fw-bold">EDYTUJ POSTAĆ</a>`;
-        }
-
-        // STATYSTYKI
-        renderStats(char);
-
-        // UMIEJĘTNOŚCI
-        renderSkills(char);
-
-        // CECHY (NAPRAWIONE)
-        renderTraits(char.cechy);
-
-        // AUTOR (NAPRAWIONE - przekazujemy id_wlasciciela z bazy)
-        if (char.id_wlasciciela) {
-            loadAuthorOtherCharacters(char.id_wlasciciela, char.id_postaci);
-        }
-
-    } catch (e) {
-        console.error("Błąd JS:", e);
+    // Cechy
+    if(currentChar.cechy) {
+        document.getElementById('traits-container').innerHTML = currentChar.cechy.map(t => {
+            let color = t.typ === 'negatywna' ? '#dc3545' : '#96C433';
+            return `<span class="trait-badge" style="border-color:${color}; color:${color}">${t.nazwa}</span>`;
+        }).join('');
     }
 });
 
-function renderStats(char) {
-    const sDef = [
-        {n:'Siła', v:char.sila, m:100}, {n:'HP', v:char.hp, m:300}, {n:'Wytrzymałość', v:char.wytrzymalosc, m:300}
-    ];
-    document.getElementById('stats-container').innerHTML = sDef.map(s => `
-        <div class="mb-2">
-            <div class="d-flex justify-content-between small"><span>${s.n}</span><span>${s.v}/${s.m}</span></div>
-            <div class="stats-bar"><div class="stats-fill" style="width:${(s.v/s.m)*100}%"></div></div>
+// SILNIK MISTRZA GRY
+function processGMAction() {
+    const dice = parseInt(document.getElementById('mg-dice-input').value);
+    const mode = document.getElementById('mg-action-type').value;
+    const resultBox = document.getElementById('mg-interpretation');
+
+    if(isNaN(dice)) return alert("Wpisz wynik rzutu!");
+
+    const level = currentChar.poziom || 1;
+    const skillVal = mode === 'lowienie' ? currentChar.u_lowienie : currentChar.u_tropienie;
+    const skillBonus = [0, 1, 3, 5][skillVal] || 0;
+
+    const total = dice + skillBonus + level;
+
+    const table = {
+        1: "Niespodzianka", 2: "Przeciwnik", 3: "Przeciwnik", 5: "Zwierzyna", 9: "Zwierzyna", 16: "Zwierzyna"
+    };
+
+    let outcome = total >= 30 ? "Zwierzyna" : (table[total] || "Nic");
+
+    resultBox.innerHTML = `
+        <div class="p-3 border border-secondary rounded">
+            <div class="small text-muted">Suma: ${dice} + Bonus(${skillBonus}) + Level(${level}) = <strong>${total}</strong></div>
+            <h3 class="text-white mt-2">${outcome.toUpperCase()}</h3>
         </div>
-    `).join('');
-}
-
-function renderSkills(char) {
-    const bMap = { 0:0, 1:1, 2:3, 3:5 };
-    document.getElementById('skills-container').innerHTML = SkillsDef.map(s => {
-        const val = char[s.id] || 0;
-        return `<div class="d-flex justify-content-between x-small mb-1">
-            <span>${s.l}</span>
-            <span class="text-success fw-bold">${'●'.repeat(val)}${'○'.repeat(3-val)} (+${bMap[val]})</span>
-        </div>`;
-    }).join('');
-}
-
-function renderTraits(cechy) {
-    const tBox = document.getElementById('traits-container');
-    if (!cechy || cechy.length === 0) {
-        tBox.innerHTML = '<p class="text-muted small">Brak cech.</p>';
-        return;
-    }
-    tBox.innerHTML = cechy.map(t => {
-        let color = 'var(--em1)';
-        if(t.typ === 'negatywna') color = '#CA4250';
-        if(t.typ === 'ciezka_negatywna') color = '#8B0000';
-        return `<span class="trait-badge" style="border-color:${color}; color:${color}">${t.nazwa}</span>`;
-    }).join('');
-}
-
-async function loadAuthorOtherCharacters(ownerId, currentCharId) {
-    const res = await fetch(`api/characters.php?owner_id=${ownerId}`);
-    const others = await res.json();
-    const list = document.getElementById('other-chars-list');
-
-    const filtered = others.filter(c => c.id_postaci !== currentCharId);
-    if (filtered.length === 0) {
-        list.innerHTML = '<p class="text-muted x-small">To jedyna postać autora.</p>';
-        return;
-    }
-
-    list.innerHTML = filtered.map(c => `
-        <a href="postac.html?id=${c.id_postaci}" class="d-flex align-items-center mb-2 text-decoration-none p-2 rounded bg-dark border-start" style="border-left: 4px solid ${getGroupColor(c.klan)} !important;">
-            <img src="${c.url_awatara || 'https://via.placeholder.com/50'}" style="width:30px; height:30px; object-fit:cover;" class="rounded me-2">
-            <div class="small text-white">${c.imie}</div>
-        </a>
-    `).join('');
+    `;
 }

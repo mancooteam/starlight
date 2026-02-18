@@ -10,30 +10,20 @@ if ($method === 'GET') {
         $stmt = $pdo->prepare("SELECT * FROM st_postacie WHERE id_postaci = ?");
         $stmt->execute([$_GET['id']]);
         $char = $stmt->fetch();
-
         if ($char) {
-            // Pobieranie cech z nazwą i typem
-            $s = $pdo->prepare("SELECT c.id, c.nazwa, c.typ FROM st_cechy c
-                                JOIN st_postacie_cechy pc ON c.id = pc.id_cechy
-                                WHERE pc.id_postaci = ?");
+            $s = $pdo->prepare("SELECT c.nazwa, c.typ FROM st_cechy c JOIN st_postacie_cechy pc ON c.id = pc.id_cechy WHERE pc.id_postaci = ?");
             $s->execute([$_GET['id']]);
             $char['cechy'] = $s->fetchAll();
         }
-        echo json_encode($char ?: ['error' => 'Nie znaleziono']);
-    }
-    elseif (isset($_GET['owner_id'])) {
-        $stmt = $pdo->prepare("SELECT id_postaci, imie, url_awatara, ranga, klan FROM st_postacie WHERE id_wlasciciela = ?");
-        $stmt->execute([$_GET['owner_id']]);
+        echo json_encode($char ?: ['error' => 'Not found']);
+    } else {
+        $stmt = $pdo->query("SELECT id_postaci, imie, ranga, klan, url_awatara FROM st_postacie ORDER BY imie ASC");
         echo json_encode($stmt->fetchAll());
     }
-    else {
-        echo json_encode($pdo->query("SELECT * FROM st_postacie ORDER BY imie ASC")->fetchAll());
-    }
 }
-// Sekcja POST pozostaje bez zmian (obsługuje 18 parametrów)
 
 if ($method === 'POST') {
-    if (!$userId) exit(json_encode(['error' => 'Brak autoryzacji']));
+    if (!$userId) exit(json_encode(['error' => 'Auth required']));
 
     $id = $_POST['id_postaci'];
     $stmt = $pdo->prepare("SELECT id_wlasciciela FROM st_postacie WHERE id_postaci = ?");

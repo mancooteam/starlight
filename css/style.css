@@ -1,98 +1,34 @@
 :root {
-    --tlo1: #373737; --tlo2: #2e2e2e; --tlo3: #242424; --tlo4: #1C1C1C;
-    --tekst: #bdbdbd; --tekst2: #eee;
-    --em1: #C1D48E; --em2: #96C433; --border: 1px #1C1C1C solid;
+    --tlo1: #1e1e1e; --tlo2: #252525; --tlo3: #2d2d2d; --tekst: #bdbdbd;
+    --em1: #C1D48E; --em2: #96C433; --border: 1px solid #333;
     /* Kolory klanowe */
     --c-gwiezdny: #5C5AA6; --c-pustka: #6C8570; --c-wieczni: #886CAB; --c-ciemny: #8F534B;
     --c-cien: #E38F9C; --c-grom: #FFCE7A; --c-rzeka: #7898FF; --c-wicher: #A3E0D5;
-    --c-bractwo: #CA4250; --c-niedzwiedz: #ffffff; --c-samotnik: #7DBF65; --c-off: #828282;
 }
 
-body { background: var(--tlo4); color: var(--tekst); font-family: 'Poppins', sans-serif; font-size: 14px; }
+body { background: var(--tlo1); color: var(--tekst); font-family: 'Poppins', sans-serif; }
+.navbar { background: var(--tlo2); }
 .card { background: var(--tlo2); border: var(--border); border-radius: 12px; }
-.navbar { background: var(--tlo3); border-bottom: var(--border); }
 
-/* Statystyki i paski */
-.stats-bar { height: 8px; background: var(--tlo4); border-radius: 4px; overflow: hidden; }
-.stats-fill { height: 100%; background: var(--em2); transition: width 1s ease-in-out; }
-
-/* Cechy i Dekoracje */
+/* Dynamiczne klasy grup */
 .group-name { font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
-.trait-badge {
-    display: inline-block; padding: 5px 12px; margin: 3px; border: 1px solid; border-radius: 50px;
-    font-size: 0.8rem; font-weight: 600; background: rgba(0,0,0,0.2); text-transform: uppercase;
-}
-
-/* SEKCIJA MISTRZA GRY */
-#gm-action-menu .list-group-item {
-    transition: all 0.2s; cursor: pointer; color: var(--tekst); border: none;
-    background: transparent; padding: 15px;
-}
-#gm-action-menu .list-group-item:hover { background: rgba(151, 196, 51, 0.1); }
-#gm-action-menu .list-group-item.active {
-    background: rgba(151, 196, 51, 0.15) !important;
-    border-left: 4px solid var(--em2) !important;
-    color: var(--em2) !important;
-    font-weight: bold;
-}
-.dice-box {
-    background: #111; border-radius: 10px; padding: 15px; border: 1px solid #333;
-    text-align: center; margin-top: 15px;
-}
-.roll-result { font-size: 2rem; font-weight: 800; color: var(--em2); display: block; }
-
-/* Klasy tekstowe klanów */
-.txt-gwiezdny-klan { color: var(--c-gwiezdny); text-shadow: 0 0 5px var(--c-gwiezdny); }
+.txt-gwiezdny-klan { color: var(--c-gwiezdny); text-shadow: 0 0 10px var(--c-gwiezdny); }
 .txt-ciemny-las { color: var(--c-ciemny); font-style: italic; text-decoration: underline; }
 .txt-klan-gromu { color: var(--c-grom); }
 .txt-klan-rzeki { color: var(--c-rzeka); }
-.txt-klan-cienia { color: var(--c-cien); }
-.txt-klan-wichru { color: var(--c-wicher); }
 
-/************************************/
+/* Statystyki */
+.stats-bar { height: 8px; background: #111; border-radius: 4px; overflow: hidden; margin-top: 5px; }
+.stats-fill { height: 100%; background: var(--em2); transition: width 1s ease-in-out; }
 
-.hunt-menu {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-    gap: 10px;
-    margin-bottom: 20px;
-}
-.terrain-btn {
-    background: var(--tlo3);
-    border: 1px solid var(--border);
-    color: var(--tekst);
-    padding: 10px;
-    border-radius: 8px;
-    font-size: 0.8rem;
+/* Cechy (Glassmorphism) */
+.trait-badge {
+    display: inline-block; padding: 4px 12px; margin: 3px; border: 1px solid; border-radius: 50px;
+    font-size: 0.75rem; font-weight: 600; background: rgba(255,255,255,0.05); backdrop-filter: blur(4px);
     transition: 0.3s;
 }
-.terrain-btn:hover, .terrain-btn.active {
-    border-color: var(--em2);
-    background: rgba(151, 196, 51, 0.1);
-    color: white;
-}
-.result-display {
-    background: rgba(0,0,0,0.3);
-    border-radius: 10px;
-    padding: 20px;
-    border: 1px dashed rgba(255,255,255,0.1);
-}
-.badge-prey { background-color: #28a745; color: white; }
-.badge-enemy { background-color: #dc3545; color: white; }
-.badge-surprise { background-color: #fd7e14; color: white; }
+.trait-badge:hover { transform: translateY(-2px); box-shadow: 0 0 10px currentColor; }
 
-/* Stylizacja Walki */
-.text-critical { color: #ff00ff; text-shadow: 0 0 10px rgba(255, 0, 255, 0.5); font-weight: 800; }
-.text-bleeding { color: #ff4d4d; animation: pulse-blood 2s infinite; }
-.combat-log { font-family: 'monospace'; font-size: 0.85rem; background: rgba(0,0,0,0.5); padding: 10px; border-radius: 5px; margin-top: 10px; text-align: left; }
-
-@keyframes pulse-blood {
-    0% { opacity: 1; }
-    50% { opacity: 0.6; }
-    100% { opacity: 1; }
-}
-
-.badge-hit { background: #28a745; }
-.badge-weak { background: #ffc107; color: #000; }
-.badge-fail { background: #dc3545; }
-.badge-crit { background: #6f42c1; }
+/* Panel MG */
+.roll-input { background: #111 !important; color: var(--em2) !important; border: 1px solid #444 !important; font-size: 1.5rem; text-align: center; }
+.gm-console-card { border: 1px solid rgba(150, 196, 51, 0.3); background: linear-gradient(to bottom right, #252525, #1a1a1a); }
