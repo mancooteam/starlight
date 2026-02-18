@@ -6,7 +6,14 @@ $method = $_SERVER['REQUEST_METHOD'];
 $userId = $_SESSION['id_uzytkownika'] ?? null;
 
 if ($method === 'GET') {
-    if (isset($_GET['id'])) {
+    // 1. Inne postacie autora
+    if (isset($_GET['owner_id'])) {
+        $stmt = $pdo->prepare("SELECT id_postaci, imie, url_awatara, klan FROM st_postacie WHERE id_wlasciciela = ?");
+        $stmt->execute([$_GET['owner_id']]);
+        echo json_encode($stmt->fetchAll());
+    }
+    // 2. Jedna konkretna postać
+    elseif (isset($_GET['id'])) {
         $stmt = $pdo->prepare("SELECT * FROM st_postacie WHERE id_postaci = ?");
         $stmt->execute([$_GET['id']]);
         $char = $stmt->fetch();
@@ -15,15 +22,16 @@ if ($method === 'GET') {
             $s->execute([$_GET['id']]);
             $char['cechy'] = $s->fetchAll();
         }
-        echo json_encode($char ?: ['error' => 'Not found']);
-    } else {
-        $stmt = $pdo->query("SELECT id_postaci, imie, ranga, klan, url_awatara FROM st_postacie ORDER BY imie ASC");
-        echo json_encode($stmt->fetchAll());
+        echo json_encode($char ?: ['error' => 'Nie znaleziono']);
+    }
+    // 3. Lista główna
+    else {
+        echo json_encode($pdo->query("SELECT * FROM st_postacie ORDER BY imie ASC")->fetchAll());
     }
 }
 
 if ($method === 'POST') {
-    if (!$userId) exit(json_encode(['error' => 'Auth required']));
+    if (!$userId) exit(json_encode(['error' => 'Brak sesji']));
 
     $id = $_POST['id_postaci'];
     $stmt = $pdo->prepare("SELECT id_wlasciciela FROM st_postacie WHERE id_postaci = ?");

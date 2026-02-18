@@ -1,85 +1,62 @@
-let currentChar = null;
-
 document.addEventListener('DOMContentLoaded', async () => {
     const id = new URLSearchParams(window.location.search).get('id');
-    if(!id) return location.href = 'index.html';
-
     const auth = await getAuth();
     const res = await fetch(`api/characters.php?id=${id}`);
-    currentChar = await res.json();
+    const char = await res.json();
 
+    if(char.error) return window.location.href = 'index.html';
+
+    // UI State
     document.getElementById('loading-spinner').classList.add('d-none');
     document.getElementById('character-content').classList.remove('d-none');
 
-    // Render danych podstawowych
-    const nameEl = document.getElementById('char-name');
-    nameEl.innerText = currentChar.imie;
-    nameEl.className = 'group-name ' + getGroupStyleClass(currentChar.klan);
-    document.getElementById('profile-accent-card').style.borderTop = `6px solid ${getGroupColor(currentChar.klan)}`;
-    document.getElementById('char-avatar').src = currentChar.url_awatara || 'https://via.placeholder.com/400';
-    document.getElementById('char-basic').innerText = `${currentChar.ranga} • ${currentChar.klan}`;
-    document.getElementById('char-description').innerText = currentChar.opis;
+    // Basic Data
+    document.getElementById('char-name').innerText = char.imie;
+    document.getElementById('char-name').className = 'group-name ' + getGroupStyleClass(char.klan);
+    document.getElementById('profile-accent-card').style.borderTop = `8px solid ${getGroupColor(char.klan)}`;
+    document.getElementById('char-avatar').src = char.url_awatara || 'https://via.placeholder.com/400';
+    document.getElementById('char-basic').innerText = `${char.ranga} • ${char.klan}`;
+    document.getElementById('char-description').innerText = char.opis;
 
-    // Statystyki (Skalowanie 100/300)
+    // Stats (0-300)
     const stats = [
-        {n: 'Siła', v: currentChar.sila, m: 100},
-        {n: 'Zręczność', v: currentChar.zrecznosc, m: 100},
-        {n: 'HP', v: currentChar.hp, m: 300},
-        {n: 'Wytrzymałość', v: currentChar.wytrzymalosc, m: 300}
+        {label: 'Siła', v: char.sila, m: 100},
+        {label: 'HP', v: char.hp, m: 300},
+        {label: 'Wytrzymałość', v: char.wytrzymalosc, m: 300}
     ];
     document.getElementById('stats-container').innerHTML = stats.map(s => `
         <div class="mb-3">
-            <div class="d-flex justify-content-between x-small"><span>${s.n}</span><span>${s.v}/${s.m}</span></div>
+            <div class="d-flex justify-content-between x-small"><span>${s.label}</span><span>${s.v}/${s.m}</span></div>
             <div class="stats-bar"><div class="stats-fill" style="width: ${(s.v/s.m)*100}%"></div></div>
         </div>
     `).join('');
 
-    // Umiejętności (Kropki)
+    // Skills (0-3 dots)
     const skills = [
-        {l: 'Tropienie', v: currentChar.u_tropienie},
-        {l: 'Skradanie', v: currentChar.u_skradanie},
-        {l: 'Łowienie', v: currentChar.u_lowienie}
+        {l: 'Tropienie', v: char.u_tropienie},
+        {l: 'Skradanie', v: char.u_skradanie},
+        {l: 'Łowienie', v: char.u_lowienie}
     ];
     document.getElementById('skills-container').innerHTML = skills.map(s => `
         <div class="d-flex justify-content-between mb-1">
             <span class="small">${s.l}</span>
-            <span class="text-success">${'●'.repeat(s.v)}${'○'.repeat(3-s.v)}</span>
+            <span>${'<i class="bi bi-circle-fill skill-dot-active mx-1"></i>'.repeat(s.v)}${'<i class="bi bi-circle skill-dot-empty mx-1"></i>'.repeat(3-s.v)}</span>
         </div>
     `).join('');
 
-    // Cechy
-    if(currentChar.cechy) {
-        document.getElementById('traits-container').innerHTML = currentChar.cechy.map(t => {
-            let color = t.typ === 'negatywna' ? '#dc3545' : '#96C433';
-            return `<span class="trait-badge" style="border-color:${color}; color:${color}">${t.nazwa}</span>`;
-        }).join('');
-    }
+    // Load Author's other characters
+    loadAuthorOthers(char.id_wlasciciela, char.id_postaci);
 });
 
-// SILNIK MISTRZA GRY
-function processGMAction() {
-    const dice = parseInt(document.getElementById('mg-dice-input').value);
-    const mode = document.getElementById('mg-action-type').value;
-    const resultBox = document.getElementById('mg-interpretation');
-
-    if(isNaN(dice)) return alert("Wpisz wynik rzutu!");
-
-    const level = currentChar.poziom || 1;
-    const skillVal = mode === 'lowienie' ? currentChar.u_lowienie : currentChar.u_tropienie;
-    const skillBonus = [0, 1, 3, 5][skillVal] || 0;
-
-    const total = dice + skillBonus + level;
-
-    const table = {
-        1: "Niespodzianka", 2: "Przeciwnik", 3: "Przeciwnik", 5: "Zwierzyna", 9: "Zwierzyna", 16: "Zwierzyna"
-    };
-
-    let outcome = total >= 30 ? "Zwierzyna" : (table[total] || "Nic");
-
-    resultBox.innerHTML = `
-        <div class="p-3 border border-secondary rounded">
-            <div class="small text-muted">Suma: ${dice} + Bonus(${skillBonus}) + Level(${level}) = <strong>${total}</strong></div>
-            <h3 class="text-white mt-2">${outcome.toUpperCase()}</h3>
-        </div>
-    `;
+async function loadAuthorOthers(ownerId, currentId) {
+    const r = await fetch(`api/characters.php?owner_id=${ownerId}`);
+    const list = await r.json();
+    document.getElementById('other-chars-list').innerHTML = list
+        .filter(c => c.id_postaci !== currentId)
+        .map(c => `
+            <a href="postac.html?id=${c.id_postaci}" class="d-flex align-items-center p-2 text-decoration-none rounded bg-dark border border-secondary border-opacity-10">
+                <img src="${c.url_awatara}" class="rounded-circle me-3" style="width: 30px; height: 30px; object-fit: cover;">
+                <div class="small text-white">${c.imie}</div>
+            </a>
+        `).join('');
 }

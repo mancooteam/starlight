@@ -4,72 +4,39 @@
     <meta charset="UTF-8">
     <title>Panel Mistrza Gry - ST_HUB</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-<nav class="navbar navbar-expand-lg"><div class="container">
-    <a class="navbar-brand text-white fw-bold" href="index.html">ST_HUB | GM CONSOLE</a>
-</div></nav>
-
+<nav class="navbar navbar-expand-lg"><div class="container"><a class="navbar-brand text-white fw-bold" href="index.html">ST_HUB | GM</a><a href="index.html" class="btn btn-sm btn-outline-warning ms-auto">Wyjdź z panelu</a></div></nav>
 <div class="container my-5">
-    <div class="gm-panel p-4 shadow-lg">
-        <h3 class="text-white mb-4">⚙️ Konsola Operacyjna Mistrza Gry</h3>
-
+    <div class="card p-4 gm-console-card">
+        <h3 class="text-warning fw-bold mb-4"><i class="bi bi-dice-6-fill me-2"></i>Konsola Akcji MG</h3>
         <div class="row g-4">
             <div class="col-md-5">
-                <div class="action-card mb-3">
-                    <label class="small text-muted mb-2">Postać Grywalna:</label>
-                    <select id="char-selector" class="form-select bg-dark text-white border-secondary mb-3"></select>
+                <label class="small text-muted mb-1">Postać docelowa:</label>
+                <select id="mg-char-select" class="form-select bg-dark text-white mb-3" onchange="loadCharForMG()"></select>
 
-                    <label class="small text-muted mb-2">Tryb Akcji:</label>
-                    <select id="action-mode" class="form-select bg-dark text-white border-secondary mb-3" onchange="updateUI()">
-                        <optgroup label="Polowanie">
-                            <option value="polowanie">Poszukiwanie (Początek)</option>
-                            <option value="schwytanie">Próba Schwytania / Skok</option>
-                            <option value="pogon_zwierz">Pogoń za zwierzyną</option>
-                        </optgroup>
-                        <optgroup label="Walka">
-                            <option value="zaskoczenie">Atak z Zaskoczenia (1d14)</option>
-                            <option value="atak">Atak Celność (1d20)</option>
-                            <option value="blok">Blokowanie Celność (1d20)</option>
-                            <option value="unik">Unik Celność (1d20)</option>
-                            <option value="ucieczka">Ucieczka (1d10 vs 1d8)</option>
-                        </optgroup>
-                    </select>
+                <label class="small text-muted mb-1">Rodzaj rzutu:</label>
+                <select id="mg-action-mode" class="form-select bg-dark text-white mb-3" onchange="updateMgCalculations()">
+                    <option value="polowanie">Polowanie (Początek)</option>
+                    <option value="lowienie">Łowienie (Początek)</option>
+                    <option value="schwytanie">Schwytanie / Atak</option>
+                    <option value="pogon">Pogoń za zwierzyną</option>
+                </select>
 
-                    <div id="combat-inputs" class="d-none">
-                        <hr class="border-secondary">
-                        <label class="small text-muted mb-2">Statystyki Przeciwnika (Defensor):</label>
-                        <input type="number" id="enemy-def" class="form-control bg-dark text-white border-secondary mb-2" placeholder="Odporność (O)">
-                        <div class="form-check form-switch mb-2">
-                            <input class="form-check-input" type="checkbox" id="hit-sensitive">
-                            <label class="form-check-label small text-muted">Atak w czuły punkt (Gardło/Brzuch)</label>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="action-card">
-                    <label class="small text-muted mb-2 d-block">Wynik Rzutu k20 / k14 / k10:</label>
-                    <input type="number" id="mg-roll" class="form-control roll-input mb-3" placeholder="Wpisz rzut...">
-                    <button class="btn btn-gm-action w-100" onclick="processGMAction()">INTERPRETUJ AKCJĘ</button>
-                </div>
+                <label class="small text-muted mb-1">Wpisz wynik fizycznego rzutu (1d20):</label>
+                <input type="number" id="mg-dice-input" class="form-control roll-input mb-3" placeholder="k20">
+                <button class="btn btn-warning w-100 py-3 fw-bold" onclick="executeMgInterpretation()">INTERPRETUJ</button>
             </div>
-
             <div class="col-md-7">
-                <div id="bonus-info" class="action-card mb-3">
-                    <h6 class="text-white small text-uppercase">Aktywne Modyfikatory:</h6>
-                    <div id="bonus-tags" class="d-flex flex-wrap gap-1 mb-2"></div>
-                    <div class="fs-4 fw-bold text-success">Suma Bonusu: <span id="total-modifier">+0</span></div>
-                </div>
-
-                <div id="result-display" class="action-card h-100 d-flex align-items-center justify-content-center text-center">
-                    <p class="text-muted italic">Wybierz postać i akcję, aby rozpocząć kalkulację...</p>
+                <div id="mg-result-display" class="h-100 d-flex flex-column justify-content-center text-center p-3 border border-secondary border-opacity-25 rounded bg-black-50">
+                    <p class="text-muted">Wybierz wojownika i rzuć kością.</p>
                 </div>
             </div>
         </div>
     </div>
 </div>
-
 <script src="js/utils.js"></script>
 <script src="js/mg_panel.js"></script>
 </body>
