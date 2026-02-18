@@ -38,3 +38,5 @@ body { background: var(--tlo4); color: var(--tekst); font-family: 'Poppins', san
     transition: 0.25s; cursor: default;
 }
 .trait-badge:hover { transform: translateY(-2px); background: rgba(50, 50, 50, 0.8); box-shadow: 0 0 8px currentColor; }
+
+.card {color:white!important;}
