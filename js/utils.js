@@ -1,13 +1,9 @@
 const Groups = ["Klan Cienia", "Klan Wichru", "Klan Rzeki", "Klan Gromu", "Plemię Niedźwiedzich Kłów", "Plemię Wiecznych Łowów", "Gwiezdny Klan", "Nieaktywny", "Ciemny Las", "Pustka", "Npc", "Samotnik", "Bractwo Krwi"];
 const Ranks = ["Kocię", "Terminator", "Terminator Medyka", "Nowicjusz", "Wojownik", "Łowca", "Strażnik", "Matka/Opiekun", "Przywódca", "Zastępca", "Wieszcz Promieni Słońca", "Wieszcz Blasku Księżyca", "Samotnik", "Gwiezdny", "Martwy", "Ciemny Las"];
-
-const SkillsConfig = [
-    { id: 'u_lowienie', label: 'Łowienie Ryb' },
-    { id: 'u_plywanie', label: 'Pływanie' },
-    { id: 'u_skradanie', label: 'Skradanie się' },
-    { id: 'u_tropienie', label: 'Tropienie' },
-    { id: 'u_wspinaczka', label: 'Wspinaczka' },
-    { id: 'u_zielarstwo', label: 'Zielarstwo' }
+const SkillsDef = [
+    { id: 'u_lowienie', l: 'Łowienie Ryb' }, { id: 'u_plywanie', l: 'Pływanie' },
+    { id: 'u_skradanie', l: 'Skradanie' }, { id: 'u_tropienie', l: 'Tropienie' },
+    { id: 'u_wspinaczka', l: 'Wspinaczka' }, { id: 'u_zielarstwo', l: 'Zielarstwo' }
 ];
 
 const GroupConfig = {
@@ -25,6 +21,12 @@ const GroupConfig = {
     "Nieaktywny": { color: "#828282", class: "txt-nieaktywny" }
 };
 
-function getGroupStyleClass(g) { return GroupConfig[g] ? GroupConfig[g].class : ""; }
-function getGroupColor(g) { return GroupConfig[g] ? GroupConfig[g].color : "#96C433"; }
-async function getAuth() { try { const r = await fetch('api/auth.php?action=status'); return await r.json(); } catch(e) { return {loggedIn:false}; } }
+function getGroupStyleClass(g) { return (GroupConfig[g]) ? GroupConfig[g].class : ""; }
+function getGroupColor(g) { return (GroupConfig[g]) ? GroupConfig[g].color : "#96C433"; }
+
+async function getAuth() {
+    try {
+        const r = await fetch('api/auth.php?action=status');
+        return await r.json();
+    } catch(e) { return {loggedIn: false, rola: 'gosc'}; }
+}
