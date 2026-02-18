@@ -103,3 +103,30 @@ async function loadOtherCharacters(ownerId, currentCharId) {
         </a>
     `).join('');
 }
+
+function renderCharacter(char, currentUser) {
+    const nameEl = document.getElementById('char-name');
+    const cardEl = document.getElementById('profile-accent-card');
+
+    // Dynamiczne stylowanie imienia i obramowania
+    nameEl.innerText = char.imie;
+    nameEl.className = 'group-name ' + getGroupStyleClass(char.klan);
+    cardEl.style.borderTop = `6px solid ${getGroupAccentBorder(char.klan)}`;
+
+    document.getElementById('char-avatar').src = char.url_awatara;
+    document.getElementById('char-basic').innerHTML = `${char.ranga} | ${char.klan}`;
+
+    // Statystyki ze skalowaniem do 100 i 300
+    const stats = [
+        { n: 'Siła', v: char.sila, m: 100 },
+        { n: 'HP', v: char.hp, m: 300 },
+        { n: 'Wytrzymałość', v: char.wytrzymalosc, m: 300 }
+    ];
+
+    document.getElementById('stats-box').innerHTML = stats.map(s => `
+        <div class="mb-2">
+            <small>${s.n}: ${s.v}/${s.m}</small>
+            <div class="stats-bar"><div class="stats-fill" style="width:${(s.v/s.m)*100}%"></div></div>
+        </div>
+    `).join('');
+}

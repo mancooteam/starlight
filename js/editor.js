@@ -173,3 +173,38 @@ function setupFormSubmission() {
         }
     });
 }
+
+async function loadCharacterData(id, auth) {
+    const res = await fetch(`api/characters.php?id=${id}`);
+    const char = await res.json();
+
+    if (char.error) return showToast(char.error, "danger");
+
+    const form = document.getElementById('editor-form');
+
+    // Ustawianie wartości w polach tekstowych i selectach
+    form.id_postaci.value = char.id_postaci;
+    form.id_postaci.readOnly = true;
+    form.imie.value = char.imie;
+    form.opis.value = char.opis;
+    form.url_awatara.value = char.url_awatara;
+    form.plec.value = char.plec;
+
+    // KLUCZOWE: Ustawienie selektorów
+    form.klan.value = char.klan;
+    form.ranga.value = char.ranga;
+
+    // Statystyki (HP i W do 300)
+    ['sila', 'zrecznosc', 'szybkosc', 'odpornosc', 'hp', 'wytrzymalosc'].forEach(s => {
+        form[s].value = char[s];
+    });
+
+    // Cechy
+    if (char.cechy) {
+        char.cechy.forEach(t => {
+            const cb = Array.from(document.querySelectorAll('.form-check-label'))
+                .find(el => el.innerText === t.nazwa);
+            if (cb) document.getElementById(cb.getAttribute('for')).checked = true;
+        });
+    }
+}
