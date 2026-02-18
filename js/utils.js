@@ -6,6 +6,7 @@ const SkillsDef = [
     { id: 'u_wspinaczka', l: 'Wspinaczka' }, { id: 'u_zielarstwo', l: 'Zielarstwo' }
 ];
 
+// js/utils.js
 const GroupConfig = {
     "Gwiezdny Klan": { color: "#5C5AA6", class: "txt-gwiezdny-klan" },
     "Pustka": { color: "#6C8570", class: "txt-pustka" },
@@ -18,7 +19,8 @@ const GroupConfig = {
     "Plemię Niedźwiedzich Kłów": { color: "#ffffff", class: "txt-plemie-niedzwiedzich-klow" },
     "Bractwo Krwi": { color: "#CA4250", class: "txt-bractwo-krwi" },
     "Samotnik": { color: "#7DBF65", class: "txt-samotnik" },
-    "Nieaktywny": { color: "#828282", class: "txt-nieaktywny" }
+    "Nieaktywny": { color: "#828282", class: "txt-nieaktywny" },
+    "Npc": { color: "#7B2CBF", class: "txt-npc" }
 };
 
 function getGroupStyleClass(g) { return (GroupConfig[g]) ? GroupConfig[g].class : ""; }
