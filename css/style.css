@@ -4,32 +4,34 @@
     --em1: #C1D48E; --em2: #96C433; --em3: #a5c462;
     --border: 1px #1C1C1C solid;
 
-    /* Kolory Grup (HEX) */
+    /* Kolory Grup */
     --c-gwiezdny: #5C5AA6; --c-pustka: #6C8570; --c-wieczni: #886CAB;
     --c-ciemny: #8F534B; --c-cien: #E38F9C; --c-grom: #FFCE7A;
     --c-rzeka: #7898FF; --c-wicher: #A3E0D5; --c-bractwo: #CA4250;
     --c-niedzwiedz: #ffffff; --c-samotnik: #7DBF65; --c-off: #828282;
 }
 
-body { background: var(--tlo4); color: var(--tekst); font-family: 'Poppins', sans-serif; }
+body { background: var(--tlo4); color: var(--tekst); font-family: 'Poppins', sans-serif; font-size: 14px; }
 .navbar { background: var(--tlo3); border-bottom: var(--border); }
-.card { background: var(--tlo2); border: var(--border); color: var(--tekst2); }
+.card { background: var(--tlo2); border: var(--border); color: var(--tekst2); overflow: hidden; }
 
-/* Dynamiczne dekoracje dla imion i kart */
-.group-name { font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
-.stats-bar { height: 8px; background: var(--tlo4); border-radius: 4px; overflow: hidden; }
-.stats-fill { height: 100%; background: var(--em2); transition: width 0.5s; }
+/* Dekoracje imion */
+.group-name { font-weight: 600; text-transform: uppercase; letter-spacing: 1px; transition: 0.3s; }
+.stats-bar { height: 8px; background: var(--tlo4); border-radius: 4px; overflow: hidden; margin-top: 4px; }
+.stats-fill { height: 100%; background: var(--em2); transition: width 0.8s ease-in-out; }
 
-/* Klasy kolorystyczne grup */
-.txt-gwiezdny-klan { color: var(--c-gwiezdny); text-shadow: 0 0 5px var(--c-gwiezdny); }
+/* Klasy tekstowe grup */
+.txt-gwiezdny-klan { color: var(--c-gwiezdny); text-shadow: 0 0 8px var(--c-gwiezdny); }
 .txt-pustka { color: var(--c-pustka); }
-.txt-plemie-wiecznych-lowow { color: var(--c-wieczni); text-shadow: 1px 1px 0 #000; }
-.txt-ciemny-las { color: var(--c-ciemny); font-style: italic; }
+.txt-plemie-wiecznych-lowow { color: var(--c-wieczni); text-shadow: 1px 1px 2px #000; }
+.txt-ciemny-las { color: var(--c-ciemny); font-style: italic; text-decoration: underline; }
 .txt-klan-cienia { color: var(--c-cien); }
-.txt-klan-gromu { color: var(--c-grom); text-shadow: 0 0 3px #000; }
+.txt-klan-gromu { color: var(--c-grom); text-shadow: 0 0 3px rgba(0,0,0,0.5); }
 .txt-klan-rzeki { color: var(--c-rzeka); }
 .txt-klan-wichru { color: var(--c-wicher); }
-.txt-plemie-niedzwiedzich-klow { color: var(--c-niedzwiedz); border-bottom: 1px solid var(--c-niedzwiedz); }
-.txt-bractwo-krwi { color: var(--c-bractwo); font-weight: bold; }
+.txt-plemie-niedzwiedzich-klow { color: var(--c-niedzwiedz); border-bottom: 1px dashed #fff; }
+.txt-bractwo-krwi { color: var(--c-bractwo); font-weight: 800; }
 .txt-samotnik { color: var(--c-samotnik); }
-.txt-nieaktywny { color: var(--c-off); opacity: 0.7; }
+.txt-nieaktywny { color: var(--c-off); opacity: 0.6; }
+
+.trait-badge { display: inline-block; padding: 3px 12px; margin: 3px; border: 1px solid; border-radius: 15px; font-size: 0.8rem; background: rgba(0,0,0,0.3); }

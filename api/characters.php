@@ -3,8 +3,8 @@ require_once 'db_connect.php';
 header('Content-Type: application/json');
 
 $method = $_SERVER['REQUEST_METHOD'];
-$role = $_SESSION['rola'] ?? 'gosc';
 $userId = $_SESSION['id_uzytkownika'] ?? null;
+$role = $_SESSION['rola'] ?? 'gosc';
 
 if ($method === 'GET') {
     if (isset($_GET['action']) && $_GET['action'] === 'get_all_traits') {
@@ -18,18 +18,18 @@ if ($method === 'GET') {
             $s->execute([$_GET['id']]);
             $char['cechy'] = $s->fetchAll();
         }
-        echo json_encode($char);
+        echo json_encode($char ?: ['error' => 'Nie znaleziono']);
     } elseif (isset($_GET['owner_id'])) {
         $stmt = $pdo->prepare("SELECT id_postaci, imie, url_awatara, ranga FROM st_postacie WHERE id_wlasciciela = ?");
         $stmt->execute([$_GET['owner_id']]);
         echo json_encode($stmt->fetchAll());
     } else {
-        echo json_encode($pdo->query("SELECT id_postaci, imie, ranga, klan, url_awatara FROM st_postacie")->fetchAll());
+        echo json_encode($pdo->query("SELECT id_postaci, imie, ranga, klan, url_awatara FROM st_postacie ORDER BY imie ASC")->fetchAll());
     }
 }
 
 if ($method === 'POST') {
-    if ($role === 'gosc') exit(json_encode(['error' => 'Brak autoryzacji']));
+    if (!$userId) exit(json_encode(['error' => 'Zaloguj się']));
 
     $id = $_POST['id_postaci'];
     $stmt = $pdo->prepare("SELECT id_wlasciciela FROM st_postacie WHERE id_postaci = ?");
@@ -37,7 +37,7 @@ if ($method === 'POST') {
     $exist = $stmt->fetch();
 
     if ($exist && $exist['id_wlasciciela'] != $userId && $role !== 'administrator') {
-        exit(json_encode(['error' => 'Brak uprawnień']));
+        exit(json_encode(['error' => 'Brak uprawnień do edycji']));
     }
 
     $sql = ($exist) ?
@@ -47,12 +47,13 @@ if ($method === 'POST') {
     $params = [$_POST['imie'], $_POST['ranga'], $_POST['klan'], $_POST['plec'], $_POST['opis'], $_POST['url_awatara'], (int)$_POST['sila'], (int)$_POST['zrecznosc'], (int)$_POST['szybkosc'], (int)$_POST['odpornosc'], (int)$_POST['hp'], (int)$_POST['wytrzymalosc'], $id];
     if (!$exist) $params[] = $userId;
 
-    $pdo->prepare($sql)->execute($params);
-
-    $pdo->prepare("DELETE FROM st_postacie_cechy WHERE id_postaci = ?")->execute([$id]);
-    if (isset($_POST['cechy'])) {
-        $s = $pdo->prepare("INSERT INTO st_postacie_cechy (id_postaci, id_cechy) VALUES (?, ?)");
-        foreach ($_POST['cechy'] as $tid) $s->execute([$id, $tid]);
-    }
-    echo json_encode(['success' => 'Zapisano pomyślnie!']);
+    try {
+        $pdo->prepare($sql)->execute($params);
+        $pdo->prepare("DELETE FROM st_postacie_cechy WHERE id_postaci = ?")->execute([$id]);
+        if (isset($_POST['cechy'])) {
+            $s = $pdo->prepare("INSERT INTO st_postacie_cechy (id_postaci, id_cechy) VALUES (?, ?)");
+            foreach ($_POST['cechy'] as $tid) $s->execute([$id, $tid]);
+        }
+        echo json_encode(['success' => 'Zapisano pomyślnie!']);
+    } catch (Exception $e) { echo json_encode(['error' => $e->getMessage()]); }
 }
