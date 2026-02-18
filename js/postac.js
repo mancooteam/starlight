@@ -45,7 +45,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (char.cechy && char.cechy.length > 0) {
         tBox.innerHTML = char.cechy.map(t => {
             let color = 'var(--em1)';
-            if(t.typ === 'mieszana') color = 'yellow';
+            if(t.typ === 'mieszana') color = '#dec879';
             if(t.typ === 'negatywna') color = 'var(--c-bractwo)';
             if(t.typ === 'ciezka_negatywna') color = '#8B0000';
             return `<span class="trait-badge" style="border-color:${color}; color:${color}">${t.nazwa}</span>`;
