@@ -2,17 +2,29 @@ document.getElementById('addForm')?.addEventListener('submit', async (e) => {
     e.preventDefault();
     const msg = document.getElementById('msg');
 
+    // Zbieramy wszystkie dane zgodnie ze schematem bazy
     const payload = {
         id_postaci: document.getElementById('id_postaci').value.trim(),
         imie: document.getElementById('imie').value,
-        klan: document.getElementById('klan').value,
         ranga: document.getElementById('ranga').value,
+        klan: document.getElementById('klan').value,
         plec: document.getElementById('plec').value,
-        url_awatara: document.getElementById('url_awatara').value,
         opis: document.getElementById('opis').value,
-        sila: document.getElementById('sila').value,
-        zrecznosc: document.getElementById('zrecznosc').value,
-        szybkosc: document.getElementById('szybkosc').value
+        url_awatara: document.getElementById('url_awatara').value,
+        // Statystyki
+        sila: parseInt(document.getElementById('sila').value) || 0,
+        zrecznosc: parseInt(document.getElementById('zrecznosc').value) || 0,
+        szybkosc: parseInt(document.getElementById('szybkosc').value) || 0,
+        odpornosc: parseInt(document.getElementById('odpornosc').value) || 0,
+        hp: parseInt(document.getElementById('hp').value) || 0,
+        wytrzymalosc: parseInt(document.getElementById('wytrzymalosc').value) || 0,
+        // Umiejętności
+        u_lowienie: parseInt(document.getElementById('u_lowienie').value) || 0,
+        u_plywanie: parseInt(document.getElementById('u_plywanie').value) || 0,
+        u_skradanie: parseInt(document.getElementById('u_skradanie').value) || 0,
+        u_tropienie: parseInt(document.getElementById('u_tropienie').value) || 0,
+        u_wspinaczka: parseInt(document.getElementById('u_wspinaczka').value) || 0,
+        u_zielarstwo: parseInt(document.getElementById('u_zielarstwo').value) || 0
     };
 
     try {
@@ -26,17 +38,17 @@ document.getElementById('addForm')?.addEventListener('submit', async (e) => {
 
         if(result.status === 'success') {
             msg.className = "alert alert-success mt-3";
-            msg.textContent = "Postać została pomyślnie dodana!";
+            msg.textContent = "Wojownik dołączył do klanu!";
             msg.classList.remove('d-none');
             setTimeout(() => location.href = 'index.html', 1500);
         } else {
             msg.className = "alert alert-danger mt-3";
-            msg.textContent = result.message || "Błąd podczas zapisywania.";
+            msg.textContent = result.message;
             msg.classList.remove('d-none');
         }
     } catch (err) {
         msg.className = "alert alert-danger mt-3";
-        msg.textContent = "Błąd połączenia z serwerem.";
+        msg.textContent = "Błąd połączenia: " + err.message;
         msg.classList.remove('d-none');
     }
 });

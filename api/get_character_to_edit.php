@@ -3,8 +3,7 @@ require_once 'db_connect.php';
 header('Content-Type: application/json');
 
 if (!isset($_SESSION['user_id'])) {
-    echo json_encode(['status' => 'error', 'message' => 'Brak autoryzacji']);
-    exit;
+    die(json_encode(['status' => 'error', 'message' => 'Brak autoryzacji']));
 }
 
 $id = $_GET['id'] ?? '';
@@ -15,14 +14,15 @@ try {
     $char = $stmt->fetch();
 
     if (!$char) {
-        echo json_encode(['status' => 'error', 'message' => 'Nie znaleziono postaci']);
-        exit;
+        die(json_encode(['status' => 'error', 'message' => 'Postać nie istnieje']));
     }
 
-    // Sprawdzenie uprawnień: Właściciel lub Admin
-    if ($char['id_wlasciciela'] != $_SESSION['user_id'] && $_SESSION['rola'] !== 'administrator') {
-        echo json_encode(['status' => 'error', 'message' => 'Brak uprawnień do edycji tej postaci']);
-        exit;
+    // Sprawdzenie uprawnień
+    $is_admin = ($_SESSION['rola'] === 'administrator');
+    $is_owner = ($char['id_wlasciciela'] == $_SESSION['user_id']);
+
+    if (!$is_admin && !$is_owner) {
+        die(json_encode(['status' => 'error', 'message' => 'To nie Twoja postać!']));
     }
 
     echo json_encode(['status' => 'success', 'data' => $char]);

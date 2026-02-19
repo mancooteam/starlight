@@ -2,107 +2,127 @@
 <html lang="pl">
 <head>
     <meta charset="UTF-8">
-    <title>Starlight - Dodaj Postać</title>
+    <title>Starlight - Pełny Formularz Postaci</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        body { background: #1a1a1a; color: white; }
-        .card { background: #2d2d2d; border: none; color: white; }
-        .form-control, .form-select { background: #3d3d3d; border: 1px solid #555; color: white; }
-        .form-control:focus, .form-select:focus { background: #444; color: white; border-color: #ffc107; box-shadow: none; }
+        body { background: #121212; color: #e0e0e0; font-family: 'Segoe UI', sans-serif; }
+        .card { background: #1e1e1e; border: 1px solid #333; }
+        .form-label { color: #ffc107; font-weight: 600; font-size: 0.9rem; }
+        .form-control, .form-select { background: #2b2b2b; border: 1px solid #444; color: white; }
+        .form-control:focus, .form-select:focus { background: #333; color: white; border-color: #ffc107; box-shadow: 0 0 0 0.25rem rgba(255, 193, 7, 0.25); }
+        h5 { border-left: 4px solid #ffc107; padding-left: 10px; margin-top: 20px; color: #fff; }
     </style>
 </head>
 <body class="py-5">
 <div class="container">
     <div class="row justify-content-center">
-        <div class="col-lg-8">
+        <div class="col-xl-10">
             <div class="card shadow-lg p-4">
-                <h2 class="text-warning mb-4">Nowy Wojownik</h2>
+                <h2 class="text-center text-warning mb-4">Tworzenie Nowej Postaci</h2>
                 <form id="addForm">
                     <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label">Unikalne ID Postaci</label>
-                            <input type="text" id="id_postaci" class="form-control" placeholder="np. ognio-123" required maxlength="50">
+                        <h5>Informacje Podstawowe</h5>
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">Unikalne ID (ręczne)</label>
+                            <input type="text" id="id_postaci" class="form-control" placeholder="np. szara-stopa-01" required maxlength="50">
                         </div>
-                        <div class="col-md-6 mb-3">
+                        <div class="col-md-4 mb-3">
                             <label class="form-label">Imię postaci</label>
-                            <input type="text" id="imie" class="form-control" placeholder="Imię" required maxlength="100">
+                            <input type="text" id="imie" class="form-control" required maxlength="100">
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">Płeć</label>
+                            <input type="text" id="plec" class="form-control" maxlength="20">
                         </div>
 
                         <div class="col-md-6 mb-3">
                             <label class="form-label">Klan / Grupa</label>
                             <select id="klan" class="form-select" required>
-                                <option value="Gwiezdny Klan">Gwiezdny Klan</option>
-                                <option value="Ciemny Las">Ciemny Las</option>
-                                <option value="Pustka">Pustka</option>
-                                <option value="Plemię Wiecznych Łowów">Plemię Wiecznych Łowów</option>
-                                <option value="Klan Cienia">Klan Cienia</option>
-                                <option value="Klan Gromu">Klan Gromu</option>
-                                <option value="Klan Rzeki">Klan Rzeki</option>
-                                <option value="Klan Wichru">Klan Wichru</option>
-                                <option value="Plemię Niedźwiedzich Kłów">Plemię Niedźwiedzich Kłów</option>
-                                <option value="Samotnik">Samotnik</option>
-                                <option value="Nieaktywny">Nieaktywny</option>
-                                <option value="NPC">NPC</option>
+                                <option>Gwiezdny Klan</option><option>Ciemny Las</option><option>Pustka</option>
+                                <option>Plemię Wiecznych Łowów</option><option>Klan Cienia</option><option>Klan Gromu</option>
+                                <option>Klan Rzeki</option><option>Klan Wichru</option><option>Plemię Niedźwiedzich Kłów</option>
+                                <option>Samotnik</option><option>Nieaktywny</option><option>NPC</option>
                             </select>
                         </div>
-
                         <div class="col-md-6 mb-3">
                             <label class="form-label">Ranga</label>
                             <select id="ranga" class="form-select" required>
-                                <option value="kocię">kocię</option>
-                                <option value="terminator">terminator</option>
-                                <option value="terminator medyka">terminator medyka</option>
-                                <option value="wojownik">wojownik</option>
-                                <option value="matka/opiekun">matka/opiekun</option>
-                                <option value="łowca">łowca</option>
-                                <option value="strażnik">strażnik</option>
-                                <option value="nowicjusz">nowicjusz</option>
-                                <option value="medyk">medyk</option>
-                                <option value="zastępca">zastępca</option>
-                                <option value="przywódca">przywódca</option>
-                                <option value="gwiezdny">gwiezdny</option>
-                                <option value="ciemny las">ciemny las</option>
-                                <option value="nieaktywny">nieaktywny</option>
-                                <option value="martwy">martwy</option>
-                                <option value="wieszcz blasku księżyca">wieszcz blasku księżyca</option>
-                                <option value="wieszcz promieni słońca">wieszcz promieni słońca</option>
-                                <option value="starszyzna">starszyzna</option>
+                                <option>kocię</option><option>terminator</option><option>terminator medyka</option>
+                                <option>wojownik</option><option>matka/opiekun</option><option>łowca</option>
+                                <option>strażnik</option><option>nowicjusz</option><option>medyk</option>
+                                <option>zastępca</option><option>przywódca</option><option>gwiezdny</option>
+                                <option>ciemny las</option><option>nieaktywny</option><option>martwy</option>
+                                <option>wieszcz blasku księżyca</option><option>wieszcz promieni słońca</option><option>starszyzna</option>
                             </select>
                         </div>
 
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label">Płeć</label>
-                            <input type="text" id="plec" class="form-control" maxlength="20">
-                        </div>
-                        <div class="col-md-6 mb-3">
+                        <div class="col-12 mb-3">
                             <label class="form-label">URL Awatara</label>
                             <input type="url" id="url_awatara" class="form-control" placeholder="https://...">
                         </div>
-
                         <div class="col-12 mb-3">
                             <label class="form-label">Opis postaci</label>
                             <textarea id="opis" class="form-control" rows="3"></textarea>
                         </div>
 
-                        <div class="col-md-4 mb-3">
+                        <h5>Statystyki Atrybutów</h5>
+                        <div class="col-md-2 col-6 mb-3">
                             <label class="form-label">Siła</label>
                             <input type="number" id="sila" class="form-control" value="0">
                         </div>
-                        <div class="col-md-4 mb-3">
+                        <div class="col-md-2 col-6 mb-3">
                             <label class="form-label">Zręczność</label>
                             <input type="number" id="zrecznosc" class="form-control" value="0">
                         </div>
-                        <div class="col-md-4 mb-3">
+                        <div class="col-md-2 col-6 mb-3">
                             <label class="form-label">Szybkość</label>
                             <input type="number" id="szybkosc" class="form-control" value="0">
+                        </div>
+                        <div class="col-md-2 col-6 mb-3">
+                            <label class="form-label">Odporność</label>
+                            <input type="number" id="odpornosc" class="form-control" value="0">
+                        </div>
+                        <div class="col-md-2 col-6 mb-3">
+                            <label class="form-label">HP</label>
+                            <input type="number" id="hp" class="form-control" value="0">
+                        </div>
+                        <div class="col-md-2 col-6 mb-3">
+                            <label class="form-label">Wytrzymałość</label>
+                            <input type="number" id="wytrzymalosc" class="form-control" value="0">
+                        </div>
+
+                        <h5>Umiejętności Specjalne (Poziomy)</h5>
+                        <div class="col-md-4 col-6 mb-3">
+                            <label class="form-label">Łowienie (u_lowienie)</label>
+                            <input type="number" id="u_lowienie" class="form-control" value="0" min="0" max="127">
+                        </div>
+                        <div class="col-md-4 col-6 mb-3">
+                            <label class="form-label">Pływanie (u_plywanie)</label>
+                            <input type="number" id="u_plywanie" class="form-control" value="0" min="0" max="127">
+                        </div>
+                        <div class="col-md-4 col-6 mb-3">
+                            <label class="form-label">Skradanie (u_skradanie)</label>
+                            <input type="number" id="u_skradanie" class="form-control" value="0" min="0" max="127">
+                        </div>
+                        <div class="col-md-4 col-6 mb-3">
+                            <label class="form-label">Tropienie (u_tropienie)</label>
+                            <input type="number" id="u_tropienie" class="form-control" value="0" min="0" max="127">
+                        </div>
+                        <div class="col-md-4 col-6 mb-3">
+                            <label class="form-label">Wspinaczka (u_wspinaczka)</label>
+                            <input type="number" id="u_wspinaczka" class="form-control" value="0" min="0" max="127">
+                        </div>
+                        <div class="col-md-4 col-6 mb-3">
+                            <label class="form-label">Zielarstwo (u_zielarstwo)</label>
+                            <input type="number" id="u_zielarstwo" class="form-control" value="0" min="0" max="127">
                         </div>
                     </div>
 
                     <div id="msg" class="alert d-none mt-3"></div>
 
-                    <div class="mt-4 d-flex gap-2">
-                        <button type="submit" class="btn btn-warning fw-bold px-4">Zapisz postać</button>
-                        <a href="index.html" class="btn btn-outline-light">Powrót</a>
+                    <div class="mt-4 d-flex gap-3">
+                        <button type="submit" class="btn btn-warning fw-bold px-5">ZAPISZ POSTAĆ</button>
+                        <a href="index.html" class="btn btn-outline-secondary px-4">Anuluj</a>
                     </div>
                 </form>
             </div>
