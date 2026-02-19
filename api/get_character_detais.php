@@ -3,7 +3,10 @@ require_once 'db_connect.php';
 header('Content-Type: application/json');
 
 $id = $_GET['id'] ?? '';
-if (empty($id)) die(json_encode(['status' => 'error', 'message' => 'Brak ID']));
+if (empty($id)) {
+    echo json_encode(['status' => 'error', 'message' => 'Brak ID postaci']);
+    exit;
+}
 
 try {
     // 1. Pobierz dane głównej postaci
@@ -11,9 +14,12 @@ try {
     $stmt->execute([$id]);
     $character = $stmt->fetch();
 
-    if (!$character) die(json_encode(['status' => 'error', 'message' => 'Postać nie istnieje']));
+    if (!$character) {
+        echo json_encode(['status' => 'error', 'message' => 'Postać nie istnieje']);
+        exit;
+    }
 
-    // 2. Pobierz cechy przypisane do tej postaci
+    // 2. Pobierz cechy przypisane do postaci
     $traitStmt = $pdo->prepare("
         SELECT c.nazwa, c.typ
         FROM st_cechy c
@@ -23,7 +29,7 @@ try {
     $traitStmt->execute([$id]);
     $traits = $traitStmt->fetchAll();
 
-    // 3. Pobierz inne postacie tego samego użytkownika
+    // 3. Pobierz inne postacie tego samego właściciela
     $stmtOther = $pdo->prepare("SELECT id_postaci, imie, url_awatara, klan FROM st_postacie WHERE id_wlasciciela = ? AND id_postaci != ?");
     $stmtOther->execute([$character['id_wlasciciela'], $id]);
     $otherCharacters = $stmtOther->fetchAll();
@@ -38,4 +44,6 @@ try {
             'is_admin' => (isset($_SESSION['rola']) && $_SESSION['rola'] === 'administrator')
         ]
     ]);
-} catch (Exception $e) { echo json_encode(['status' => 'error', 'message' => $e->getMessage()]); }
+} catch (Exception $e) {
+    echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
+}

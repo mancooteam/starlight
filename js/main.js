@@ -24,17 +24,14 @@ async function load() {
 
         if(data.session && data.session.isLoggedIn) {
             authBox.innerHTML = `
-                <span class="me-2 text-info">Witaj, ${data.session.role}!</span>
-                <a href="add.html" class="btn btn-success btn-sm me-2">Dodaj Postać</a>
+                <a href="add.html" class="btn btn-success btn-sm me-2">Dodaj</a>
                 <button onclick="logout()" class="btn btn-danger btn-sm">Wyloguj</button>`;
         } else {
-            authBox.innerHTML = `
-                <a href="login.html" class="btn btn-primary btn-sm me-2">Logowanie</a>
-                <a href="register.html" class="btn btn-outline-light btn-sm">Rejestracja</a>`;
+            authBox.innerHTML = `<a href="login.html" class="btn btn-primary btn-sm">Logowanie</a>`;
         }
 
         if (data.chars.length === 0) {
-            list.innerHTML = '<div class="col-12 text-center py-5">Baza postaci jest pusta.</div>';
+            list.innerHTML = '<div class="col-12 text-center text-muted py-5">Brak postaci.</div>';
             return;
         }
 
@@ -43,14 +40,13 @@ async function load() {
             const accent = klanColors[c.klan] || "#828282";
             list.innerHTML += `
                 <div class="col-md-3 mb-4">
-                    <div class="card h-100 shadow-sm" style="border-top: 5px solid ${accent};">
-                        <img src="${c.url_awatara || 'https://via.placeholder.com/300x200?text=Brak+Avataru'}" 
-                             class="card-img-top" style="height: 200px; object-fit: cover;">
-                        <div class="card-body bg-dark text-white">
-                            <h5 style="color: ${accent};">${c.imie}</h5>
-                            <p class="card-text mb-1"><small>Klan:</small> ${c.klan}</p>
-                            <p class="card-text mb-3"><small>Ranga:</small> <span class="badge" style="background-color: ${accent}; color: #000;">${c.ranga}</span></p>
-                            <a href="character.html?id=${c.id_postaci}" class="btn btn-sm btn-outline-light w-100" style="border-color: ${accent}; color: ${accent};">Zobacz Profil</a>
+                    <div class="card h-100 bg-dark text-white shadow" style="border-top: 5px solid ${accent};">
+                        <img src="${c.url_awatara || 'https://via.placeholder.com/300x200'}" class="card-img-top" style="height: 180px; object-fit: cover;">
+                        <div class="card-body">
+                            <h5 style="color: ${accent};" class="mb-1">${c.imie}</h5>
+                            <small class="text-muted d-block mb-2">${c.klan}</small>
+                            <span class="badge w-100 mb-3" style="background-color: ${accent}; color: #000;">${c.ranga}</span>
+                            <a href="character.html?id=${c.id_postaci}" class="btn btn-sm btn-outline-light w-100" style="border-color: ${accent}; color: ${accent};">Profil</a>
                         </div>
                     </div>
                 </div>`;
