@@ -22,15 +22,16 @@ async function load() {
         const res = await fetch('api/get_characters.php');
         const data = await res.json();
 
+        // Obsługa paska nawigacji
         if(data.session && data.session.isLoggedIn) {
             authBox.innerHTML = `
-                <a href="add.html" class="btn btn-success btn-sm me-2">Dodaj</a>
+                <a href="add.html" class="btn btn-success btn-sm me-2">Dodaj Postać</a>
                 <button onclick="logout()" class="btn btn-danger btn-sm">Wyloguj</button>`;
         } else {
             authBox.innerHTML = `<a href="login.html" class="btn btn-primary btn-sm">Logowanie</a>`;
         }
 
-        if (data.chars.length === 0) {
+        if (!data.chars || data.chars.length === 0) {
             list.innerHTML = '<div class="col-12 text-center text-muted py-5">Brak postaci.</div>';
             return;
         }
@@ -38,20 +39,29 @@ async function load() {
         list.innerHTML = '';
         data.chars.forEach(c => {
             const accent = klanColors[c.klan] || "#828282";
+
+            // Sprawdzenie uprawnień do edycji
+            const canEdit = data.session.role === 'administrator' || data.session.user_id == c.id_wlasciciela;
+            const editBtn = canEdit ?
+                `<a href="edit.html?id=${c.id_postaci}" class="btn btn-sm w-100 mb-1" style="background: ${accent}; color: #000; font-weight: bold;">Edytuj</a>` : '';
+
             list.innerHTML += `
                 <div class="col-md-3 mb-4">
                     <div class="card h-100 bg-dark text-white shadow" style="border-top: 5px solid ${accent};">
                         <img src="${c.url_awatara || 'https://via.placeholder.com/300x200'}" class="card-img-top" style="height: 180px; object-fit: cover;">
-                        <div class="card-body">
+                        <div class="card-body d-flex flex-column">
                             <h5 style="color: ${accent};" class="mb-1">${c.imie}</h5>
                             <small class="text-muted d-block mb-2">${c.klan}</small>
-                            <span class="badge w-100 mb-3" style="background-color: ${accent}; color: #000;">${c.ranga}</span>
-                            <a href="character.html?id=${c.id_postaci}" class="btn btn-sm btn-outline-light w-100" style="border-color: ${accent}; color: ${accent};">Profil</a>
+                            <span class="badge mb-3" style="background-color: ${accent}; color: #000;">${c.ranga}</span>
+                            <div class="mt-auto">
+                                ${editBtn}
+                                <a href="character.html?id=${c.id_postaci}" class="btn btn-sm btn-outline-light w-100" style="border-color: ${accent}; color: ${accent};">Profil</a>
+                            </div>
                         </div>
                     </div>
                 </div>`;
         });
-    } catch (err) { console.error(err); }
+    } catch (err) { console.error("Błąd ładowania:", err); }
 }
 
 function logout() { fetch('api/logout.php').then(() => location.href = 'index.html'); }

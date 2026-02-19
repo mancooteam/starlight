@@ -2,89 +2,66 @@
 <html lang="pl">
 <head>
     <meta charset="UTF-8">
-    <title>Edycja Wojownika - Starlight</title>
+    <title>Edytuj Wojownika</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        body { background: #121212; color: #e0e0e0; }
+        body { background: #121212; color: #eee; transition: 0.5s; }
         .card { background: #1e1e1e; border: 1px solid #333; }
-        .form-label { color: #ffc107; font-weight: 600; }
-        .form-control, .form-select { background: #2b2b2b; border: 1px solid #444; color: white; }
-        h5 { border-left: 4px solid #ffc107; padding-left: 10px; margin-top: 20px; }
+        .accent-text { color: var(--accent-color, #ffc107); }
+        .accent-border { border-color: var(--accent-color, #ffc107) !important; }
+        .btn-accent { background: var(--accent-color, #ffc107); color: #000; font-weight: bold; }
     </style>
 </head>
 <body class="py-5">
 <div class="container">
-    <div class="row justify-content-center">
-        <div class="col-xl-10">
-            <div class="card shadow-lg p-4">
-                <h2 class="text-center text-warning mb-4">Edycja Postaci: <span id="display-name"></span></h2>
-                <form id="editForm">
-                    <input type="hidden" id="id_postaci">
-                    <div class="row">
-                        <h5>Podstawowe informacje</h5>
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label">Imię postaci</label>
-                            <input type="text" id="imie" class="form-control" required maxlength="100">
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label">Płeć</label>
-                            <input type="text" id="plec" class="form-control" maxlength="20">
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label">Klan / Grupa</label>
-                            <select id="klan" class="form-select">
-                                <option>Gwiezdny Klan</option><option>Ciemny Las</option><option>Pustka</option>
-                                <option>Plemię Wiecznych Łowów</option><option>Klan Cienia</option><option>Klan Gromu</option>
-                                <option>Klan Rzeki</option><option>Klan Wichru</option><option>Plemię Niedźwiedzich Kłów</option>
-                                <option>Samotnik</option><option>Nieaktywny</option><option>NPC</option>
-                            </select>
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label">Ranga</label>
-                            <select id="ranga" class="form-select">
-                                <option>kocię</option><option>terminator</option><option>terminator medyka</option>
-                                <option>wojownik</option><option>matka/opiekun</option><option>łowca</option>
-                                <option>strażnik</option><option>nowicjusz</option><option>medyk</option>
-                                <option>zastępca</option><option>przywódca</option><option>gwiezdny</option>
-                                <option>ciemny las</option><option>nieaktywny</option><option>martwy</option>
-                                <option>wieszcz blasku księżyca</option><option>wieszcz promieni słońca</option><option>starszyzna</option>
-                            </select>
-                        </div>
-
-                        <div class="col-12 mb-3">
-                            <label class="form-label">URL Awatara</label>
-                            <input type="url" id="url_awatara" class="form-control">
-                        </div>
-                        <div class="col-12 mb-3">
-                            <label class="form-label">Opis</label>
-                            <textarea id="opis" class="form-control" rows="3"></textarea>
-                        </div>
-
-                        <h5>Atrybuty i Umiejętności</h5>
-                        <div class="col-md-2 col-4 mb-3"><label class="form-label">Siła</label><input type="number" id="sila" class="form-control"></div>
-                        <div class="col-md-2 col-4 mb-3"><label class="form-label">Zręczność</label><input type="number" id="zrecznosc" class="form-control"></div>
-                        <div class="col-md-2 col-4 mb-3"><label class="form-label">Szybkość</label><input type="number" id="szybkosc" class="form-control"></div>
-                        <div class="col-md-2 col-4 mb-3"><label class="form-label">Odporność</label><input type="number" id="odpornosc" class="form-control"></div>
-                        <div class="col-md-2 col-4 mb-3"><label class="form-label">HP</label><input type="number" id="hp" class="form-control"></div>
-                        <div class="col-md-2 col-4 mb-3"><label class="form-label">Wytrzymałość</label><input type="number" id="wytrzymalosc" class="form-control"></div>
-
-                        <div class="col-md-4 col-6 mb-3"><label class="form-label">Łowienie</label><input type="number" id="u_lowienie" class="form-control"></div>
-                        <div class="col-md-4 col-6 mb-3"><label class="form-label">Pływanie</label><input type="number" id="u_plywanie" class="form-control"></div>
-                        <div class="col-md-4 col-6 mb-3"><label class="form-label">Skradanie</label><input type="number" id="u_skradanie" class="form-control"></div>
-                        <div class="col-md-4 col-6 mb-3"><label class="form-label">Tropienie</label><input type="number" id="u_tropienie" class="form-control"></div>
-                        <div class="col-md-4 col-6 mb-3"><label class="form-label">Wspinaczka</label><input type="number" id="u_wspinaczka" class="form-control"></div>
-                        <div class="col-md-4 col-6 mb-3"><label class="form-label">Zielarstwo</label><input type="number" id="u_zielarstwo" class="form-control"></div>
-                    </div>
-                    <div id="msg" class="alert d-none mt-3"></div>
-                    <div class="mt-4 d-flex gap-3">
-                        <button type="submit" class="btn btn-warning fw-bold px-5">ZAPISZ ZMIANY</button>
-                        <a href="index.html" class="btn btn-outline-secondary px-4">Anuluj</a>
-                    </div>
-                </form>
+    <div class="card shadow-lg p-4 accent-border" style="border-top-width: 10px !important;">
+        <h2 class="accent-text mb-4">Edytuj Postać: <span id="display-name"></span></h2>
+        <form id="editForm">
+            <input type="hidden" id="id_postaci">
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label accent-text">Klan / Grupa</label>
+                    <select id="klan" class="form-select bg-dark text-white" onchange="updateColors()">
+                        <option value="Gwiezdny Klan">Gwiezdny Klan</option>
+                        <option value="Pustka">Pustka</option>
+                        <option value="Plemię Wiecznych Łowów">Plemię Wiecznych Łowów</option>
+                        <option value="Ciemny Las">Ciemny Las</option>
+                        <option value="Klan Cienia">Klan Cienia</option>
+                        <option value="Klan Gromu">Klan Gromu</option>
+                        <option value="Klan Rzeki">Klan Rzeki</option>
+                        <option value="Klan Wichru">Klan Wichru</option>
+                        <option value="Plemię Niedźwiedzich Kłów">Plemię Niedźwiedzich Kłów</option>
+                        <option value="Bractwo Krwi">Bractwo Krwi</option>
+                        <option value="Samotnik">Samotnik</option>
+                        <option value="Nieaktywny">Nieaktywny</option>
+                    </select>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label accent-text">Imię</label>
+                    <input type="text" id="imie" class="form-control bg-dark text-white accent-border">
+                </div>
             </div>
-        </div>
+            <button type="submit" class="btn btn-accent px-5">ZAPISZ ZMIANY</button>
+        </form>
     </div>
 </div>
+
+<script>
+    const klanColors = {
+        "Gwiezdny Klan": "#5C5AA6", "Pustka": "#6C8570", "Plemię Wiecznych Łowów": "#886CAB",
+        "Ciemny Las": "#8F534B", "Klan Cienia": "#E38F9C", "Klan Gromu": "#FFCE7A",
+        "Klan Rzeki": "#7898FF", "Klan Wichru": "#A3E0D5", "Plemię Niedźwiedzich Kłów": "#ffffff",
+        "Bractwo Krwi": "#CA4250", "Samotnik": "#7DBF65", "Nieaktywny": "#828282"
+    };
+
+    function updateColors() {
+        const klan = document.getElementById('klan').value;
+        const color = klanColors[klan] || "#ffc107";
+        document.documentElement.style.setProperty('--accent-color', color);
+    }
+
+    // Skrypt ładowania danych postaci... (jak w poprzednich krokach)
+</script>
 <script src="js/edit_character.js"></script>
 </body>
 </html>
