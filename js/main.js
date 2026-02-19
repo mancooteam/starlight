@@ -1,62 +1,61 @@
 async function load() {
-    const res = await fetch('api/get_characters.php');
-    const data = await res.json();
-    const box = document.getElementById('auth-box');
+    try {
+        const res = await fetch('api/get_characters.php');
 
-    // Nawigacja
-    if(data.session.isLoggedIn) {
-        box.innerHTML = `<a href="add.html" class="btn btn-success me-2">Dodaj</a><button onclick="location.href='api/logout.php'" class="btn btn-danger">Wyloguj</button>`;
-    } else {
-        box.innerHTML = `<a href="login.html" class="btn btn-primary me-2">Logowanie</a><a href="register.html" class="btn btn-outline-light">Rejestracja</a>`;
-    }
+        // Sprawdzamy czy odpowiedź w ogóle dotarła
+        if (!res.ok) {
+            throw new Error(`Błąd serwera: ${res.status}`);
+        }
 
-    // Karty Postaci
-    const list = document.getElementById('char-list');
-    let deleteBtn = "";
-    if (user.role === 'administrator' || user.id == char.id_wlasciciela) {
-        deleteBtn = `
-        <br><button onclick="deleteCharacter('${char.id_postaci}')" class="btn btn-sm btn-danger mt-2 w-100">
-            Usuń Postać
-        </button>`;
-    }
-    data.chars.forEach(c => {
-        list.innerHTML += `
-            <div class="col-md-3 mb-4">
-                <div class="card h-100">
-                    <img src="${c.url_awatara || 'https://via.placeholder.com/150'}" class="card-img-top">
-                    <div class="card-body">
-                        <h5>${c.imie}</h5>
-                        <p class="small text-secondary">${c.ranga} | ${c.klan}</p>
-                        <a href="character.html?id=${c.id_postaci}" class="btn btn-sm btn-info w-100">Zobacz profil</a> ${deleteBtn}
+        const data = await res.json();
+        console.log("Dane z API:", data); // Zobaczysz to w konsoli F12
+
+        // Sprawdzamy czy PHP nie zwrócił błędu połączenia z db_connect.php
+        if (data.error) {
+            document.getElementById('char-list').innerHTML = `
+                <div class="alert alert-danger">Błąd bazy: ${data.error}</div>`;
+            return;
+        }
+
+        const box = document.getElementById('auth-box');
+        if(data.session && data.session.isLoggedIn) {
+            box.innerHTML = `<a href="add.html" class="btn btn-success me-2">Dodaj</a>
+                             <button onclick="logout()" class="btn btn-danger">Wyloguj</button>`;
+        } else {
+            box.innerHTML = `<a href="login.html" class="btn btn-primary me-2">Logowanie</a>
+                             <a href="register.html" class="btn btn-outline-light">Rejestracja</a>`;
+        }
+
+        const list = document.getElementById('char-list');
+        list.innerHTML = ''; // Czyścimy przed ładowaniem
+
+        if (!data.chars || data.chars.length === 0) {
+            list.innerHTML = '<div class="col-12 text-center text-muted">Brak postaci w bazie. Dodaj pierwszą!</div>';
+            return;
+        }
+
+        data.chars.forEach(c => {
+            list.innerHTML += `
+                <div class="col-md-3 mb-4">
+                    <div class="card h-100 shadow-sm">
+                        <img src="${c.url_awatara || 'https://via.placeholder.com/150'}" class="card-img-top" style="height:200px; object-fit:cover;">
+                        <div class="card-body">
+                            <h5 class="text-warning">${c.imie}</h5>
+                            <p class="small text-secondary mb-1">Ranga: ${c.ranga}</p>
+                            <p class="small text-secondary">Klan: ${c.klan}</p>
+                            <a href="character.html?id=${c.id_postaci}" class="btn btn-sm btn-outline-warning w-100">Zobacz profil</a>
+                        </div>
                     </div>
-                </div>
-            </div>`;
-    });
+                </div>`;
+        });
+    } catch (err) {
+        console.error("Błąd ładowania:", err);
+        document.getElementById('char-list').innerHTML = `<div class="alert alert-danger">Nie udało się połączyć z API: ${err.message}</div>`;
+    }
 }
 
-async function deleteCharacter(id) {
-    if (!confirm("Czy na pewno chcesz na zawsze usunąć tę postać? Tej operacji nie da się cofnąć.")) {
-        return;
-    }
-
-    try {
-        const response = await fetch('api/delete_character.php', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ id_postaci: id })
-        });
-
-        const result = await response.json();
-
-        if (result.status === 'success') {
-            alert(result.message);
-            location.reload(); // Odśwież stronę, aby zaktualizować listę
-        } else {
-            alert("Błąd: " + result.message);
-        }
-    } catch (err) {
-        alert("Wystąpił błąd podczas komunikacji z serwerem.");
-    }
+function logout() {
+    fetch('api/logout.php').then(() => location.reload());
 }
 
 load();
