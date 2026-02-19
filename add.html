@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <title>Starlight - Dodaj Postać</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { background: #1a1a1a; color: white; }
+        .card { background: #2d2d2d; border: none; color: white; }
+        .form-control, .form-select { background: #3d3d3d; border: 1px solid #555; color: white; }
+        .form-control:focus, .form-select:focus { background: #444; color: white; border-color: #ffc107; box-shadow: none; }
+    </style>
+</head>
+<body class="py-5">
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-lg p-4">
+                <h2 class="text-warning mb-4">Nowy Wojownik</h2>
+                <form id="addForm">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Unikalne ID Postaci</label>
+                            <input type="text" id="id_postaci" class="form-control" placeholder="np. ognio-123" required maxlength="50">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Imię postaci</label>
+                            <input type="text" id="imie" class="form-control" placeholder="Imię" required maxlength="100">
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Klan / Grupa</label>
+                            <select id="klan" class="form-select" required>
+                                <option value="Gwiezdny Klan">Gwiezdny Klan</option>
+                                <option value="Ciemny Las">Ciemny Las</option>
+                                <option value="Pustka">Pustka</option>
+                                <option value="Plemię Wiecznych Łowów">Plemię Wiecznych Łowów</option>
+                                <option value="Klan Cienia">Klan Cienia</option>
+                                <option value="Klan Gromu">Klan Gromu</option>
+                                <option value="Klan Rzeki">Klan Rzeki</option>
+                                <option value="Klan Wichru">Klan Wichru</option>
+                                <option value="Plemię Niedźwiedzich Kłów">Plemię Niedźwiedzich Kłów</option>
+                                <option value="Samotnik">Samotnik</option>
+                                <option value="Nieaktywny">Nieaktywny</option>
+                                <option value="NPC">NPC</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Ranga</label>
+                            <select id="ranga" class="form-select" required>
+                                <option value="kocię">kocię</option>
+                                <option value="terminator">terminator</option>
+                                <option value="terminator medyka">terminator medyka</option>
+                                <option value="wojownik">wojownik</option>
+                                <option value="matka/opiekun">matka/opiekun</option>
+                                <option value="łowca">łowca</option>
+                                <option value="strażnik">strażnik</option>
+                                <option value="nowicjusz">nowicjusz</option>
+                                <option value="medyk">medyk</option>
+                                <option value="zastępca">zastępca</option>
+                                <option value="przywódca">przywódca</option>
+                                <option value="gwiezdny">gwiezdny</option>
+                                <option value="ciemny las">ciemny las</option>
+                                <option value="nieaktywny">nieaktywny</option>
+                                <option value="martwy">martwy</option>
+                                <option value="wieszcz blasku księżyca">wieszcz blasku księżyca</option>
+                                <option value="wieszcz promieni słońca">wieszcz promieni słońca</option>
+                                <option value="starszyzna">starszyzna</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Płeć</label>
+                            <input type="text" id="plec" class="form-control" maxlength="20">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">URL Awatara</label>
+                            <input type="url" id="url_awatara" class="form-control" placeholder="https://...">
+                        </div>
+
+                        <div class="col-12 mb-3">
+                            <label class="form-label">Opis postaci</label>
+                            <textarea id="opis" class="form-control" rows="3"></textarea>
+                        </div>
+
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">Siła</label>
+                            <input type="number" id="sila" class="form-control" value="0">
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">Zręczność</label>
+                            <input type="number" id="zrecznosc" class="form-control" value="0">
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">Szybkość</label>
+                            <input type="number" id="szybkosc" class="form-control" value="0">
+                        </div>
+                    </div>
+
+                    <div id="msg" class="alert d-none mt-3"></div>
+
+                    <div class="mt-4 d-flex gap-2">
+                        <button type="submit" class="btn btn-warning fw-bold px-4">Zapisz postać</button>
+                        <a href="index.html" class="btn btn-outline-light">Powrót</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="js/forms.js"></script>
+</body>
+</html>

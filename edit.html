@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <title>Edytuj Postać - Starlight</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-dark text-light">
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card bg-secondary text-white shadow">
+                <div class="card-body p-4">
+                    <h2 class="text-center mb-4 text-warning">Edycja Postaci</h2>
+                    <form id="edit-character-form">
+                        <input type="hidden" id="char-id">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Imię postaci</label>
+                                <input type="text" id="char-imie" class="form-control" required maxlength="100">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Klan / Grupa</label>
+                                <select id="char-klan" class="form-select" required>
+                                    <option value="Gwiezdny Klan">Gwiezdny Klan</option>
+                                    <option value="Ciemny Las">Ciemny Las</option>
+                                    <option value="Pustka">Pustka</option>
+                                    <option value="Plemię Wiecznych Łowów">Plemię Wiecznych Łowów</option>
+                                    <option value="Klan Cienia">Klan Cienia</option>
+                                    <option value="Klan Gromu">Klan Gromu</option>
+                                    <option value="Klan Rzeki">Klan Rzeki</option>
+                                    <option value="Klan Wichru">Klan Wichru</option>
+                                    <option value="Plemię Niedźwiedzich Kłów">Plemię Niedźwiedzich Kłów</option>
+                                    <option value="Samotnik">Samotnik</option>
+                                    <option value="Nieaktywny">Nieaktywny</option>
+                                    <option value="NPC">NPC</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div id="edit-msg" class="alert d-none py-2 mt-3"></div>
+                        <div class="d-flex justify-content-between mt-4">
+                            <a href="index.html" class="btn btn-outline-light">Anuluj</a>
+                            <button type="submit" class="btn btn-warning px-5 fw-bold">Zapisz zmiany</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="js/edit_character.js"></script>
+</body>
+</html>

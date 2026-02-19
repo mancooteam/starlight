@@ -11,7 +11,7 @@ async function loadCharacters() {
         const result = await response.json();
 
         if (result.status === 'success') {
-            const { data, user } = result;
+            const {data, user} = result;
 
             // 1. Obsługa nawigacji w zależności od roli
             renderNav(user, authNav);
@@ -49,11 +49,13 @@ function createCharacterCard(char, user) {
             ${user.role === 'administrator' ? '<button class="btn btn-sm btn-danger w-100">Usuń</button>' : ''}
         </div>
     ` : '';
-
-    return `
-        <div class="col-md-4 col-lg-3 mb-4">
+    const cardHtml = `
+    <div class="col-md-4 col-lg-3 mb-4">
+        <a href="character.html?id=${char.id_postaci}" class="text-decoration-none">
+            <div class="card bg-secondary text-white h-100 shadow clickable-card">
+             <div class="col-md-4 col-lg-3 mb-4">
             <div class="card bg-secondary text-white h-100 shadow">
-                <img src="${char.url_awatara || 'https://via.placeholder.com/300x200?text=Brak+Avataru'}" 
+                <img src="${char.url_awatara || 'https://via.placeholder.com/350x350?text=Brak+Avataru'}" 
                      class="card-img-top" alt="${char.imie}" style="height: 200px; object-fit: cover;">
                 <div class="card-body">
                     <h5 class="card-title text-warning">${char.imie}</h5>
@@ -63,5 +65,10 @@ function createCharacterCard(char, user) {
                 ${adminButtons}
             </div>
         </div>
-    `;
+            </div>
+        </a>
+    </div>
+`;
+
+    return cardHtml;
 }
