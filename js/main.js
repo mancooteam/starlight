@@ -1,68 +1,185 @@
-const klanColors = {
-    "Gwiezdny Klan": "#5C5AA6",
-    "Pustka": "#6C8570",
-    "Plemię Wiecznych Łowów": "#886CAB",
-    "Ciemny Las": "#8F534B",
-    "Klan Cienia": "#E38F9C",
-    "Klan Gromu": "#FFCE7A",
-    "Klan Rzeki": "#7898FF",
-    "Klan Wichru": "#A3E0D5",
-    "Plemię Niedźwiedzich Kłów": "#ffffff",
-    "Bractwo Krwi": "#CA4250",
-    "Samotnik": "#7DBF65",
-    "Nieaktywny": "#828282",
-    "NPC": "#828282"
-};
+/**
+ * ST_HUB - Główna logika strony (index.html)
+ * Zarządza wyświetlaniem postaci, statystykami klanowymi oraz interfejsem użytkownika.
+ */
 
-async function load() {
-    const list = document.getElementById('char-list');
-    const authBox = document.getElementById('auth-box');
+document.addEventListener('DOMContentLoaded', async () => {
+    console.log("Inicjalizacja ST_HUB...");
+
+    // 1. Sprawdź status logowania i dostosuj nawigację
+    const auth = await getAuth();
+    renderAuthUI(auth);
+
+    // 2. Pobierz postacie z API
+    const container = document.getElementById('character-container');
+    if (!container) return;
 
     try {
-        const res = await fetch('api/get_characters.php');
-        const data = await res.json();
+        const res = await fetch('api/characters.php');
+        const chars = await res.json();
 
-        // Obsługa paska nawigacji
-        if(data.session && data.session.isLoggedIn) {
-            authBox.innerHTML = `
-                <a href="add.html" class="btn btn-success btn-sm me-2">Dodaj Postać</a>
-                <button onclick="logout()" class="btn btn-danger btn-sm">Wyloguj</button>`;
-        } else {
-            authBox.innerHTML = `<a href="login.html" class="btn btn-primary btn-sm">Logowanie</a>`;
-        }
+        // Zapisz globalnie dla wyszukiwarki
+        window.allChars = Array.isArray(chars) ? chars : [];
 
-        if (!data.chars || data.chars.length === 0) {
-            list.innerHTML = '<div class="col-12 text-center text-muted py-5">Brak postaci.</div>';
+        if (window.allChars.length === 0) {
+            container.innerHTML = `
+                <div class="col-12 text-center py-5">
+                    <i class="bi bi-inbox text-muted" style="font-size: 3rem;"></i>
+                    <p class="text-muted mt-3">Rejestr postaci jest obecnie pusty.</p>
+                </div>`;
             return;
         }
 
-        list.innerHTML = '';
-        data.chars.forEach(c => {
-            const accent = klanColors[c.klan] || "#828282";
+        // 3. Renderuj Statystyki i Siatkę Postaci
+        renderStatsDashboard(window.allChars);
+        renderGrid(window.allChars);
 
-            // Sprawdzenie uprawnień do edycji
-            const canEdit = data.session.role === 'administrator' || data.session.user_id == c.id_wlasciciela;
-            const editBtn = canEdit ?
-                `<a href="edit.html?id=${c.id_postaci}" class="btn btn-sm w-100 mb-1" style="background: ${accent}; color: #000; font-weight: bold;">Edytuj</a>` : '';
+    } catch (e) {
+        console.error("Błąd ładowania danych:", e);
+        container.innerHTML = `
+            <div class="col-12 text-center text-danger py-5">
+                <i class="bi bi-exclamation-triangle fs-1"></i>
+                <p class="mt-2">Błąd połączenia z bazą danych Aiven.</p>
+            </div>`;
+    }
 
-            list.innerHTML += `
-                <div class="col-md-3 mb-4">
-                    <div class="card h-100 bg-dark text-white shadow" style="border-top: 5px solid ${accent};">
-                        <img src="${c.url_awatara || 'https://via.placeholder.com/300x200'}" class="card-img-top" style="height: 180px; object-fit: cover;">
-                        <div class="card-body d-flex flex-column">
-                            <h5 style="color: ${accent};" class="mb-1">${c.imie}</h5>
-                            <small class="text-muted d-block mb-2">${c.klan}</small>
-                            <span class="badge mb-3" style="background-color: ${accent}; color: #000;">${c.ranga}</span>
-                            <div class="mt-auto">
-                                ${editBtn}
-                                <a href="character.html?id=${c.id_postaci}" class="btn btn-sm btn-outline-light w-100" style="border-color: ${accent}; color: ${accent};">Profil</a>
-                            </div>
-                        </div>
-                    </div>
-                </div>`;
+    // 4. Obsługa wyszukiwarki
+    const searchInput = document.getElementById('main-search');
+    if (searchInput) {
+        searchInput.addEventListener('input', e => {
+            const term = e.target.value.toLowerCase();
+            const filtered = window.allChars.filter(c =>
+                (c.imie && c.imie.toLowerCase().includes(term)) ||
+                (c.klan && c.klan.toLowerCase().includes(term))
+            );
+            renderGrid(filtered);
         });
-    } catch (err) { console.error("Błąd ładowania:", err); }
+    }
+});
+
+/**
+ * Renderuje dynamiczny panel statystyk na górze strony
+ */
+function renderStatsDashboard(chars) {
+    const dash = document.getElementById('stats-dashboard');
+    const totalCount = document.getElementById('total-chars-count');
+    const clanList = document.getElementById('clan-stats-list');
+
+    if (!dash || !totalCount || !clanList) return;
+
+    // Licznik ogólny
+    totalCount.innerText = chars.length;
+
+    // Agregacja klanów
+    const stats = {};
+    chars.forEach(c => {
+        const klan = c.klan || "Bez klanu";
+        stats[klan] = (stats[klan] || 0) + 1;
+    });
+
+    // Renderowanie odznak klanowych
+    clanList.innerHTML = Object.entries(stats)
+        .sort((a, b) => b[1] - a[1]) // Sortowanie od najliczniejszych
+        .map(([name, count]) => {
+            const color = getGroupColor(name);
+            return `
+                <div class="badge rounded-pill d-flex align-items-center p-2" 
+                     style="background: rgba(0,0,0,0.3); border: 1px solid ${color}66; transition: 0.3s;">
+                    <span class="me-2" style="color:${color}; font-weight: 800;">${count}</span>
+                    <span class="small text-white-50">${name}</span>
+                </div>
+            `;
+        }).join('');
+
+    dash.classList.remove('d-none'); // Pokaż panel po załadowaniu
 }
 
-function logout() { fetch('api/logout.php').then(() => location.href = 'index.html'); }
-document.addEventListener('DOMContentLoaded', load);
+/**
+ * Generuje kafelki postaci
+ */
+function renderGrid(chars) {
+    const container = document.getElementById('character-container');
+    if (!container) return;
+
+    if (chars.length === 0) {
+        container.innerHTML = `<div class="col-12 text-center py-5 text-muted">Nie znaleziono wojowników spełniających kryteria.</div>`;
+        return;
+    }
+
+    container.innerHTML = chars.map(c => {
+        const accentColor = getGroupColor(c.klan);
+        const groupClass = getGroupStyleClass(c.klan);
+        const avatar = c.url_awatara || 'https://via.placeholder.com/300x400?text=Brak+Awatara';
+
+        return `
+        <div class="col-6 col-md-4 col-lg-3">
+            <div class="card h-100 character-card shadow-sm" 
+                 style="border-top: 5px solid ${accentColor} !important; cursor: pointer;"
+                 onclick="window.location.href='postac.html?id=${c.id_postaci}'">
+                
+                <div class="position-relative overflow-hidden">
+                    <img src="${avatar}" class="card-img-top" style="height:220px; object-fit:cover;" alt="${c.imie}">
+                </div>
+
+                <div class="card-body p-3 text-center">
+                    <h6 class="mb-1 group-name ${groupClass}">
+                        ${c.imie}
+                    </h6>
+                    <div class="small fw-bold opacity-75" style="color:${accentColor}; font-size: 0.75rem;">
+                        ${c.klan}
+                    </div>
+                    <div class="x-small text-muted mt-1" style="font-size: 0.7rem;">
+                        ${c.ranga}
+                    </div>
+                </div>
+            </div>
+        </div>
+        `;
+    }).join('');
+}
+
+/**
+ * Zarządza przyciskami logowania, admina i profilu
+ */
+function renderAuthUI(auth) {
+    const authBox = document.getElementById('auth-buttons');
+    const adminTools = document.getElementById('admin-tools');
+
+    if (!authBox) return;
+
+    if (auth.loggedIn) {
+        // Widok dla zalogowanego
+        authBox.innerHTML = `
+            <a href="moje_postacie.html" class="btn btn-sm btn-outline-success me-2">
+                <i class="bi bi-person-circle me-1"></i> Moje Postacie
+            </a>
+            <button onclick="logout()" class="btn btn-sm btn-outline-danger">
+                <i class="bi bi-box-arrow-right"></i>
+            </button>
+        `;
+
+        // Narzędzia administratora
+        if (auth.rola === 'administrator') {
+            if (adminTools) adminTools.classList.remove('d-none');
+        }
+    } else {
+        // Widok dla gościa
+        authBox.innerHTML = `
+            <a href="login.html" class="btn btn-sm btn-primary px-3">
+                <i class="bi bi-person-lock me-1"></i> Zaloguj się
+            </a>
+        `;
+    }
+}
+
+/**
+ * Funkcja wylogowania
+ */
+async function logout() {
+    try {
+        await fetch('api/auth.php?action=logout');
+        window.location.reload();
+    } catch (e) {
+        console.error("Błąd wylogowania:", e);
+    }
+}

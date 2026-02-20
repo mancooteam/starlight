@@ -1,0 +1,50 @@
+:root {
+    --bg-dark: #0f0f0f;
+    --bg-card: #1a1a1a;
+    --accent: #96C433;
+    --text-muted: #888;
+    /* Kolory klanowe */
+    --c-grom: #FFCE7A; --c-rzeka: #7898FF; --c-cien: #E38F9C; --c-wicher: #A3E0D5;
+}
+
+body { background-color: var(--bg-dark); color: #e0e0e0; font-family: 'Poppins', sans-serif; }
+.navbar { background-color: rgba(20, 20, 20, 0.9); backdrop-filter: blur(10px); border-bottom: 1px solid #333; }
+.card { background-color: var(--bg-card); border: 1px solid #2a2a2a; border-radius: 16px; transition: 0.3s; }
+
+/* Typografia klanowa */
+.group-name { font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
+.txt-klan-gromu { color: var(--c-grom); }
+.txt-klan-rzeki { color: var(--c-rzeka); }
+.txt-klan-cienia { color: var(--c-cien); }
+
+/* Atrybuty */
+.progress { background-color: #000; height: 10px; border-radius: 5px; }
+.progress-bar { background-color: var(--accent); }
+
+/* Cechy */
+.badge-trait {
+    display: inline-block; padding: 6px 14px; margin: 4px; border-radius: 50px;
+    font-size: 0.75rem; font-weight: 600; text-transform: uppercase; border: 1px solid;
+    background: rgba(255, 255, 255, 0.05);
+}
+
+/* Inne postacie autora */
+.mini-char-link {
+    display: flex; align-items: center; padding: 10px; border-radius: 12px;
+    background: #222; text-decoration: none; color: white; border: 1px solid transparent;
+}
+.mini-char-link:hover { border-color: var(--accent); background: #282828; }
+
+#total-chars-count {
+    font-family: 'Monospace', sans-serif;
+    letter-spacing: -2px;
+}
+
+#stats-dashboard .card {
+    transition: transform 0.3s ease;
+}
+
+#stats-dashboard .card:hover {
+    transform: translateY(-5px);
+    border-color: var(--accent);
+}
