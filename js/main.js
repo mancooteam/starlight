@@ -65,7 +65,7 @@ async function fetchCharacters() {
 
         characters.forEach(char => {
             const color = klanKolory[char.klan] || '#444';
-            const canManage = currentUser.role === 'admin' || (currentUser.loggedIn && currentUser.id == char.id_wlasciciela);
+            const canManage = currentUser.role === 'administrator' || (currentUser.loggedIn && currentUser.id == char.id_wlasciciela);
 
             const card = `
                 <div class="col-md-4 col-lg-3">
