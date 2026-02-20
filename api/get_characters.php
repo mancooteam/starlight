@@ -2,6 +2,8 @@
 require_once 'db_connect.php';
 header('Content-Type: application/json');
 
+session_start();
+
 try {
     // Pobieramy postacie wraz z ich klanami, rangami i cechami
     // Używamy GROUP_CONCAT, aby złączyć wiele cech w jeden ciąg znaków
