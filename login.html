@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <title>Logowanie - ST_HUB</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="d-flex align-items-center py-4 bg-dark">
+<main class="form-signin w-100 m-auto" style="max-width: 330px;">
+    <form id="login-form" class="card p-4 shadow">
+        <h1 class="h3 mb-3 fw-bold text-center text-success">ST_HUB</h1>
+        <div class="form-floating mb-2">
+            <input type="text" name="username" class="form-control bg-dark text-white" id="u" placeholder="Login" required>
+            <label for="u">Nazwa użytkownika</label>
+        </div>
+        <div class="form-floating mb-3">
+            <input type="password" name="password" class="form-control bg-dark text-white" id="p" placeholder="Hasło" required>
+            <label for="p">Hasło</label>
+        </div>
+        <button class="w-100 btn btn-lg btn-success" type="submit">Zaloguj się</button>
+        <p class="mt-3 text-center small text-muted">Nie masz konta? <a href="register.html" class="text-success">Zarejestruj się</a></p>
+    </form>
+</main>
+<script>
+    document.getElementById('login-form').onsubmit = async (e) => {
+        e.preventDefault();
+        const res = await fetch('api/auth.php?action=login', { method: 'POST', body: new FormData(e.target) });
+        const data = await res.json();
+        if(data.success) location.href = 'index.html';
+        else alert(data.error);
+    };
+</script>
+</body>
+</html>
