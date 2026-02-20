@@ -49,6 +49,73 @@
     </div></div>
 </div>
 
+<div class="modal fade" id="addCharacterModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content bg-dark text-light">
+            <div class="modal-header border-secondary">
+                <h5 class="modal-title">Stwórz nową postać</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="addCharacterForm">
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <h6>Dane podstawowe</h6>
+                            <input type="text" name="imie" class="form-control mb-2 bg-secondary text-white border-0" placeholder="Imię postaci" required>
+                            <select name="klan" class="form-select mb-2 bg-secondary text-white border-0" required>
+                                <option value="">Wybierz grupę...</option>
+                                <option>Gwiezdny Klan</option><option>Ciemny Las</option><option>Pustka</option>
+                                <option>Plemię Wiecznych Łowów</option><option>Klan Cienia</option><option>Klan Gromu</option>
+                                <option>Klan Rzeki</option><option>Klan Wichru</option><option>Plemię Niedźwiedzich Kłów</option>
+                                <option>Samotnik</option><option>Nieaktywny</option><option>NPC</option>
+                            </select>
+                            <select name="ranga" class="form-select mb-2 bg-secondary text-white border-0" required>
+                                <option value="">Wybierz rangę...</option>
+                                <option>kocię</option><option>terminator</option><option>terminator medyka</option>
+                                <option>wojownik</option><option>matka/opiekun</option><option>łowca</option>
+                                <option>strażnik</option><option>nowicjusz</option><option>medyk</option>
+                                <option>zastępca</option><option>przywódca</option><option>starszyzna</option>
+                            </select>
+                            <select name="plec" class="form-select mb-2 bg-secondary text-white border-0">
+                                <option>Kocur</option><option>Kotka</option><option>Inna</option>
+                            </select>
+                            <input type="url" name="url_awatara" class="form-control mb-2 bg-secondary text-white border-0" placeholder="Link do awatara">
+                            <textarea name="opis" class="form-control bg-secondary text-white border-0" rows="4" placeholder="Opis postaci..."></textarea>
+                        </div>
+
+                        <div class="col-md-2">
+                            <h6>Statystyki</h6>
+                            <label class="small">Siła</label><input type="number" name="sila" class="form-control form-control-sm mb-1 bg-secondary text-white border-0" value="0">
+                            <label class="small">Zręczność</label><input type="number" name="zrecznosc" class="form-control form-control-sm mb-1 bg-secondary text-white border-0" value="0">
+                            <label class="small">Szybkość</label><input type="number" name="szybkosc" class="form-control form-control-sm mb-1 bg-secondary text-white border-0" value="0">
+                            <label class="small">Odporność</label><input type="number" name="odpornosc" class="form-control form-control-sm mb-1 bg-secondary text-white border-0" value="0">
+                            <label class="small">HP</label><input type="number" name="hp" class="form-control form-control-sm mb-1 bg-secondary text-white border-0" value="0">
+                            <label class="small">Wytrzymałość</label><input type="number" name="wytrzymalosc" class="form-control form-control-sm mb-1 bg-secondary text-white border-0" value="0">
+                        </div>
+
+                        <div class="col-md-6">
+                            <h6>Cechy postaci</h6>
+                            <div class="row small shadow-sm p-2 bg-black rounded" style="max-height: 400px; overflow-y: auto;">
+                                <div class="col-6">
+                                    <strong class="text-success">Pozytywne</strong><div id="cechy-pozytywne"></div>
+                                    <strong class="text-warning">Mieszane</strong><div id="cechy-mieszane"></div>
+                                </div>
+                                <div class="col-6">
+                                    <strong class="text-danger">Negatywne</strong><div id="cechy-negatywne"></div>
+                                    <strong class="text-danger-emphasis">Ciężkie Negatywne</strong><div id="cechy-ciezkie"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer border-secondary">
+                    <button type="submit" class="btn btn-success w-100">Zapisz postać w Starlight</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="js/main.js"></script>
 </body>
