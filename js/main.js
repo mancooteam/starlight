@@ -1,152 +1,66 @@
-const klanKolory = {
-    "Gwiezdny Klan": "#5C5AA6",
-    "Pustka": "#6C8570",
-    "Plemię Wiecznych Łowów": "#886CAB",
-    "Ciemny Las": "#8F534B",
-    "Klan Cienia": "#E38F9C",
-    "Klan Gromu": "#FFCE7A",
-    "Klan Rzeki": "#7898FF",
-    "Klan Wichru": "#A3E0D5",
-    "Plemię Niedźwiedzich Kłów": "#ffffff",
-    "Bractwo Krwi": "#CA4250",
-    "Samotnik": "#7DBF65",
-    "Nieaktywny": "#828282",
-    "NPC": "#aaaaaa"
-};
+let currentUser = { loggedIn: false };
 
-let currentUser = { loggedIn: false, id: null, username: '', role: 'gosc' };
-
-// INICJALIZACJA
-document.addEventListener('DOMContentLoaded', async () => {
-    await checkAuth();
-    await fetchCharacters();
+document.addEventListener('DOMContentLoaded', () => {
+    init();
 });
 
-// SPRAWDZANIE SESJI
-async function checkAuth() {
-    try {
-        const response = await fetch('api/check_auth.php');
-        const data = await response.json();
+async function init() {
+    await checkAuth();
+    // Tutaj możesz dodać fetchCharacters();
+}
 
-        if (data.user_id) {
-            currentUser = {
-                loggedIn: true,
-                id: data.user_id,
-                username: data.username,
-                role: data.role
-            };
-        }
-    } catch (e) { console.error("Błąd sesji"); }
+async function checkAuth() {
+    const res = await fetch('api/check_auth.php');
+    currentUser = await res.json();
     renderNavbar();
 }
 
 function renderNavbar() {
-    const authDiv = document.getElementById('auth-buttons');
+    const div = document.getElementById('auth-buttons');
     if (currentUser.loggedIn) {
-        authDiv.innerHTML = `
-            <span class="me-3 small text-secondary">Witaj, <b class="text-white">${currentUser.username}</b></span>
-            <button class="btn btn-sm btn-outline-danger" onclick="logout()">Wyloguj</button>
-        `;
+        div.innerHTML = `<span class="me-2 text-secondary">${currentUser.username}</span>
+                         <button class="btn btn-sm btn-outline-danger" onclick="logout()">Wyloguj</button>`;
     } else {
-        authDiv.innerHTML = `
-            <button class="btn btn-sm btn-primary me-2" data-bs-toggle="modal" data-bs-target="#loginModal">Zaloguj się</button>
-            <button class="btn btn-sm btn-outline-light" data-bs-toggle="modal" data-bs-target="#registerModal">Zarejestruj</button>
-        `;
+        div.innerHTML = `<button class="btn btn-sm btn-primary me-2" data-bs-toggle="modal" data-bs-target="#loginModal">Logowanie</button>
+                         <button class="btn btn-sm btn-outline-light" data-bs-toggle="modal" data-bs-target="#registerModal">Rejestracja</button>`;
     }
 }
 
-// POBIERANIE POSTACI
-async function fetchCharacters() {
-    const container = document.getElementById('characters-container');
-
-    try {
-        const response = await fetch('api/get_characters.php');
-        const characters = await response.json();
-        container.innerHTML = '';
-
-        characters.forEach(char => {
-            const color = klanKolory[char.klan] || '#444';
-            const canManage = currentUser.role === 'administrator' || (currentUser.loggedIn && currentUser.id == char.id_wlasciciela);
-
-            const card = `
-                <div class="col-md-4 col-lg-3">
-                    <div class="card bg-dark text-light h-100 character-card shadow" style="border-top: 5px solid ${color} !important;">
-                        <img src="${char.url_awatara || 'https://via.placeholder.com/300'}" class="card-img-top">
-                        <div class="card-body text-center">
-                            <h5 class="fw-bold mb-1" style="color: ${color}">${char.imie}</h5>
-                            <div class="badge rounded-pill mb-2" style="background-color: ${color}">${char.klan}</div>
-                            <p class="small text-uppercase mb-0">${char.ranga}</p>
-                            ${canManage ? `
-                                <div class="mt-3 pt-2 border-top border-secondary">
-                                    <button class="btn btn-sm btn-warning">Edytuj</button>
-                                    <button class="btn btn-sm btn-danger">Usuń</button>
-                                </div>
-                            ` : ''}
-                        </div>
-                    </div>
-                </div>`;
-            container.innerHTML += card;
-        });
-    } catch (e) {
-        container.innerHTML = '<p class="text-center text-danger">Błąd połączenia z API.</p>';
-    }
-}
-
-// OBSŁUGA LOGOWANIA
-document.getElementById('loginForm').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const username = document.getElementById('loginUser').value;
-    const password = document.getElementById('loginPass').value;
-    const errorDiv = document.getElementById('loginError');
-
-    const response = await fetch('api/login.php', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, password })
-    });
-
-    const result = await response.json();
-    if (result.success) {
-        window.location.reload();
-    } else {
-        errorDiv.innerText = result.error || 'Błąd logowania';
-    }
-});
-
-function logout() {
-    fetch('api/logout.php').then(() => window.location.reload());
-}
-
-// OBSŁUGA REJESTRACJI
+// Obsługa Rejestracji
 document.getElementById('registerForm').addEventListener('submit', async (e) => {
     e.preventDefault();
     const username = document.getElementById('regUser').value;
     const password = document.getElementById('regPass').value;
-    const confirm = document.getElementById('regPassConfirm').value;
-    const errorDiv = document.getElementById('registerError');
-
-    if (password !== confirm) {
-        errorDiv.innerText = "Hasła nie są identyczne!";
-        return;
+    if(password !== document.getElementById('regPassConfirm').value) {
+        document.getElementById('registerError').innerText = "Hasła nie pasują"; return;
     }
 
-    try {
-        const response = await fetch('api/register.php', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ username, password })
-        });
-
-        const result = await response.json();
-        if (result.success) {
-            alert("Konto założone! Możesz się teraz zalogować.");
-            // Zamknij modal rejestracji i otwórz logowanie
-            bootstrap.Modal.getInstance(document.getElementById('registerModal')).hide();
-            new bootstrap.Modal(document.getElementById('loginModal')).show();
-        } else {
-            errorDiv.innerText = result.error || 'Błąd rejestracji';
-        }
-    } catch (e) {
-        errorDiv.innerText = 'Błąd połączenia z serwerem.';
-    }
+    const res = await fetch('api/register.php', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({username, password})
+    });
+    const data = await res.json();
+    if(data.success) { alert("Gotowe!"); location.reload(); }
+    else { document.getElementById('registerError').innerText = data.error; }
 });
+
+// Obsługa Logowania
+document.getElementById('loginForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const username = document.getElementById('loginUser').value;
+    const password = document.getElementById('loginPass').value;
+
+    const res = await fetch('api/login.php', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({username, password})
+    });
+    const data = await res.json();
+    if(data.success) { location.reload(); }
+    else { document.getElementById('loginError').innerText = data.error; }
+});
+
+function logout() {
+    fetch('api/logout.php').then(() => location.reload());
+}
