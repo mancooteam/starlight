@@ -49,7 +49,8 @@ function renderNavbar() {
         `;
     } else {
         authDiv.innerHTML = `
-            <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#loginModal">Zaloguj się</button>
+            <button class="btn btn-sm btn-primary me-2" data-bs-toggle="modal" data-bs-target="#loginModal">Zaloguj się</button>
+            <button class="btn btn-sm btn-outline-light" data-bs-toggle="modal" data-bs-target="#registerModal">Zarejestruj</button>
         `;
     }
 }
@@ -115,3 +116,37 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
 function logout() {
     fetch('api/logout.php').then(() => window.location.reload());
 }
+
+// OBSŁUGA REJESTRACJI
+document.getElementById('registerForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const username = document.getElementById('regUser').value;
+    const password = document.getElementById('regPass').value;
+    const confirm = document.getElementById('regPassConfirm').value;
+    const errorDiv = document.getElementById('registerError');
+
+    if (password !== confirm) {
+        errorDiv.innerText = "Hasła nie są identyczne!";
+        return;
+    }
+
+    try {
+        const response = await fetch('api/register.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username, password })
+        });
+
+        const result = await response.json();
+        if (result.success) {
+            alert("Konto założone! Możesz się teraz zalogować.");
+            // Zamknij modal rejestracji i otwórz logowanie
+            bootstrap.Modal.getInstance(document.getElementById('registerModal')).hide();
+            new bootstrap.Modal(document.getElementById('loginModal')).show();
+        } else {
+            errorDiv.innerText = result.error || 'Błąd rejestracji';
+        }
+    } catch (e) {
+        errorDiv.innerText = 'Błąd połączenia z serwerem.';
+    }
+});
