@@ -15,6 +15,39 @@ const klanKolory = {
     "NPC": "#aaaaaa"
 };
 
+// Obsługa wysyłania formularza logowania
+document.addEventListener('submit', async (e) => {
+    if (e.target && e.target.id === 'loginForm') {
+        e.preventDefault(); // Zatrzymaj przeładowanie strony
+
+        const username = document.getElementById('loginUser').value;
+        const password = document.getElementById('loginPass').value;
+        const errorDiv = document.getElementById('loginError');
+
+        try {
+            const response = await fetch('api/login.php', {
+                method: 'POST',
+                headers: { 'Content-Type: application/json' },
+                body: JSON.stringify({ username, password })
+            });
+
+            const result = await response.json();
+
+            if (result.success) {
+                // Sukces! Zamknij modal i odśwież stronę
+                const modal = bootstrap.Modal.getInstance(document.getElementById('loginModal'));
+                modal.hide();
+                window.location.reload();
+            } else {
+                errorDiv.innerText = result.error || 'Błąd logowania';
+            }
+        } catch (err) {
+            errorDiv.innerText = 'Błąd połączenia z serwerem.';
+            console.error(err);
+        }
+    }
+});
+
 // Globalna zmienna przechowująca dane o zalogowanym użytkowniku
 let currentUser = {
     loggedIn: false,
