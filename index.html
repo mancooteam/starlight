@@ -2,114 +2,158 @@
 <html lang="pl">
 <head>
     <meta charset="UTF-8">
-    <title>Starlight RPG</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Starlight - Wojownicy</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        body { background: #121212; color: white; }
-        .character-card { border-top: 4px solid #444; background: #1e1e1e; }
+        body { background-color: #121212; color: #e0e0e0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        .navbar { background-color: #000 !important; border-bottom: 1px solid #333; }
+        .character-card { transition: transform 0.2s; border: none !important; background-color: #1e1e1e !important; }
+        .character-card:hover { transform: translateY(-5px); }
+        .card-img-top { height: 250px; object-fit: cover; }
+        .cechy-scroll { max-height: 400px; overflow-y: auto; background: #000; padding: 15px; border-radius: 8px; }
+        .form-control, .form-select { background-color: #2b2b2b !important; color: white !important; border: 1px solid #444 !important; }
+        .form-control:focus, .form-select:focus { border-color: #666 !important; box-shadow: none !important; }
     </style>
 </head>
 <body>
 
-<nav class="navbar navbar-dark bg-black border-bottom border-secondary mb-4">
+<nav class="navbar navbar-expand-lg navbar-dark mb-4 sticky-top">
     <div class="container">
-        <span class="navbar-brand fw-bold">STARLIGHT</span>
-        <div id="auth-buttons"></div>
+        <a class="navbar-brand fw-bold" href="#">STARLIGHT</a>
+        <div id="auth-buttons" class="ms-auto"></div>
     </div>
 </nav>
 
 <div class="container">
-    <div id="characters-container" class="row g-4"></div>
+    <header class="text-center mb-5">
+        <h1 class="display-4 fw-bold">Mieszkańcy Starlight</h1>
+    </header>
+
+    <div id="characters-container" class="row g-4 mb-5">
+    </div>
 </div>
 
-<div class="modal fade" id="loginModal" tabindex="-1">
-    <div class="modal-dialog"><div class="modal-content bg-dark border-secondary">
-        <form id="loginForm">
-            <div class="modal-body">
-                <input type="text" id="loginUser" class="form-control mb-2" placeholder="Login" required>
-                <input type="password" id="loginPass" class="form-control mb-2" placeholder="Hasło" required>
-                <div id="loginError" class="text-danger small"></div>
+<div class="modal fade" id="loginModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content bg-dark text-light border-secondary">
+            <div class="modal-header border-secondary">
+                <h5 class="modal-title">Logowanie</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
-            <div class="modal-footer"><button type="submit" class="btn btn-primary w-100">Zaloguj</button></div>
-        </form>
-    </div></div>
+            <form id="loginForm">
+                <div class="modal-body">
+                    <input type="text" id="loginUser" class="form-control mb-3" placeholder="Nazwa użytkownika" required>
+                    <input type="password" id="loginPass" class="form-control mb-2" placeholder="Hasło" required>
+                    <div id="loginError" class="text-danger small"></div>
+                </div>
+                <div class="modal-footer border-secondary">
+                    <button type="submit" class="btn btn-primary w-100">Zaloguj się</button>
+                </div>
+            </form>
+        </div>
+    </div>
 </div>
 
-<div class="modal fade" id="registerModal" tabindex="-1">
-    <div class="modal-dialog"><div class="modal-content bg-dark border-secondary">
-        <form id="registerForm">
-            <div class="modal-body">
-                <input type="text" id="regUser" class="form-control mb-2" placeholder="Nowy login" required>
-                <input type="password" id="regPass" class="form-control mb-2" placeholder="Hasło" required>
-                <input type="password" id="regPassConfirm" class="form-control mb-2" placeholder="Powtórz hasło" required>
-                <div id="registerError" class="text-danger small"></div>
+<div class="modal fade" id="registerModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content bg-dark text-light border-secondary">
+            <div class="modal-header border-secondary">
+                <h5 class="modal-title">Rejestracja</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
-            <div class="modal-footer"><button type="submit" class="btn btn-success w-100">Zarejestruj się</button></div>
-        </form>
-    </div></div>
+            <form id="registerForm">
+                <div class="modal-body">
+                    <input type="text" id="regUser" class="form-control mb-3" placeholder="Nazwa użytkownika" required>
+                    <input type="password" id="regPass" class="form-control mb-3" placeholder="Hasło" required>
+                    <input type="password" id="regPassConfirm" class="form-control mb-2" placeholder="Powtórz hasło" required>
+                    <div id="registerError" class="text-danger small"></div>
+                </div>
+                <div class="modal-footer border-secondary">
+                    <button type="submit" class="btn btn-success w-100">Załóż konto</button>
+                </div>
+            </form>
+        </div>
+    </div>
 </div>
 
 <div class="modal fade" id="addCharacterModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-xl">
-        <div class="modal-content bg-dark text-light">
+        <div class="modal-content bg-dark text-light border-secondary">
             <div class="modal-header border-secondary">
-                <h5 class="modal-title">Stwórz nową postać</h5>
+                <h5 class="modal-title text-success">Nowa Postać</h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
             <form id="addCharacterForm">
                 <div class="modal-body">
                     <div class="row">
                         <div class="col-md-4">
-                            <h6>Dane podstawowe</h6>
-                            <input type="text" name="imie" class="form-control mb-2 bg-secondary text-white border-0" placeholder="Imię postaci" required>
-                            <select name="klan" class="form-select mb-2 bg-secondary text-white border-0" required>
-                                <option value="">Wybierz grupę...</option>
+                            <h6 class="text-info border-bottom border-secondary pb-2 mb-3">Dane Podstawowe</h6>
+                            <label class="small text-secondary">Unikalne ID (np. ognik_01)</label>
+                            <input type="text" name="id_postaci" class="form-control mb-3" placeholder="Wpisz ID" required>
+
+                            <label class="small text-secondary">Imię</label>
+                            <input type="text" name="imie" class="form-control mb-3" placeholder="Imię postaci" required>
+
+                            <label class="small text-secondary">Klan / Grupa</label>
+                            <select name="klan" class="form-select mb-3" required>
+                                <option value="">Wybierz...</option>
                                 <option>Gwiezdny Klan</option><option>Ciemny Las</option><option>Pustka</option>
                                 <option>Plemię Wiecznych Łowów</option><option>Klan Cienia</option><option>Klan Gromu</option>
                                 <option>Klan Rzeki</option><option>Klan Wichru</option><option>Plemię Niedźwiedzich Kłów</option>
                                 <option>Samotnik</option><option>Nieaktywny</option><option>NPC</option>
                             </select>
-                            <select name="ranga" class="form-select mb-2 bg-secondary text-white border-0" required>
-                                <option value="">Wybierz rangę...</option>
+
+                            <label class="small text-secondary">Ranga</label>
+                            <select name="ranga" class="form-select mb-3" required>
+                                <option value="">Wybierz...</option>
                                 <option>kocię</option><option>terminator</option><option>terminator medyka</option>
                                 <option>wojownik</option><option>matka/opiekun</option><option>łowca</option>
                                 <option>strażnik</option><option>nowicjusz</option><option>medyk</option>
                                 <option>zastępca</option><option>przywódca</option><option>starszyzna</option>
+                                <option>wieszcz blasku księżyca</option><option>wieszcz promieni słońca</option>
                             </select>
-                            <select name="plec" class="form-select mb-2 bg-secondary text-white border-0">
-                                <option>Kocur</option><option>Kotka</option><option>Inna</option>
-                            </select>
-                            <input type="url" name="url_awatara" class="form-control mb-2 bg-secondary text-white border-0" placeholder="Link do awatara">
-                            <textarea name="opis" class="form-control bg-secondary text-white border-0" rows="4" placeholder="Opis postaci..."></textarea>
+
+                            <label class="small text-secondary">URL Awatara</label>
+                            <input type="url" name="url_awatara" class="form-control mb-3" placeholder="https://...">
+
+                            <label class="small text-secondary">Opis</label>
+                            <textarea name="opis" class="form-control mb-3" rows="3"></textarea>
                         </div>
 
                         <div class="col-md-2">
-                            <h6>Statystyki</h6>
-                            <label class="small">Siła</label><input type="number" name="sila" class="form-control form-control-sm mb-1 bg-secondary text-white border-0" value="0">
-                            <label class="small">Zręczność</label><input type="number" name="zrecznosc" class="form-control form-control-sm mb-1 bg-secondary text-white border-0" value="0">
-                            <label class="small">Szybkość</label><input type="number" name="szybkosc" class="form-control form-control-sm mb-1 bg-secondary text-white border-0" value="0">
-                            <label class="small">Odporność</label><input type="number" name="odpornosc" class="form-control form-control-sm mb-1 bg-secondary text-white border-0" value="0">
-                            <label class="small">HP</label><input type="number" name="hp" class="form-control form-control-sm mb-1 bg-secondary text-white border-0" value="0">
-                            <label class="small">Wytrzymałość</label><input type="number" name="wytrzymalosc" class="form-control form-control-sm mb-1 bg-secondary text-white border-0" value="0">
+                            <h6 class="text-info border-bottom border-secondary pb-2 mb-3">Statystyki</h6>
+                            <div class="mb-2"><label class="small">Siła</label><input type="number" name="sila" class="form-control" value="0"></div>
+                            <div class="mb-2"><label class="small">Zręczność</label><input type="number" name="zrecznosc" class="form-control" value="0"></div>
+                            <div class="mb-2"><label class="small">Szybkość</label><input type="number" name="szybkosc" class="form-control" value="0"></div>
+                            <div class="mb-2"><label class="small">Odporność</label><input type="number" name="odpornosc" class="form-control" value="0"></div>
+                            <div class="mb-2"><label class="small">HP</label><input type="number" name="hp" class="form-control" value="0"></div>
+                            <div class="mb-2"><label class="small">Wytrzymałość</label><input type="number" name="wytrzymalosc" class="form-control" value="0"></div>
                         </div>
 
                         <div class="col-md-6">
-                            <h6>Cechy postaci</h6>
-                            <div class="row small shadow-sm p-2 bg-black rounded" style="max-height: 400px; overflow-y: auto;">
-                                <div class="col-6">
-                                    <strong class="text-success">Pozytywne</strong><div id="cechy-pozytywne"></div>
-                                    <strong class="text-warning">Mieszane</strong><div id="cechy-mieszane"></div>
-                                </div>
-                                <div class="col-6">
-                                    <strong class="text-danger">Negatywne</strong><div id="cechy-negatywne"></div>
-                                    <strong class="text-danger-emphasis">Ciężkie Negatywne</strong><div id="cechy-ciezkie"></div>
+                            <h6 class="text-info border-bottom border-secondary pb-2 mb-3">Cechy</h6>
+                            <div class="cechy-scroll">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <p class="text-success fw-bold small mb-1">Pozytywne</p>
+                                        <div id="cat-pozytywna" class="mb-3"></div>
+                                        <p class="text-warning fw-bold small mb-1">Mieszane</p>
+                                        <div id="cat-mieszana" class="mb-3"></div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <p class="text-danger fw-bold small mb-1">Negatywne</p>
+                                        <div id="cat-negatywna" class="mb-3"></div>
+                                        <p class="text-danger-emphasis fw-bold small mb-1">Ciężkie Negatywne</p>
+                                        <div id="cat-ciezka_negatywna" class="mb-3"></div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
                 <div class="modal-footer border-secondary">
-                    <button type="submit" class="btn btn-success w-100">Zapisz postać w Starlight</button>
+                    <button type="submit" class="btn btn-success btn-lg w-100">Dodaj postać do bazy</button>
                 </div>
             </form>
         </div>
