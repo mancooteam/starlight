@@ -1,4 +1,3 @@
-// 1. Konfiguracja kolorów i danych stałych
 const klanKolory = {
     "Gwiezdny Klan": "#5C5AA6",
     "Pustka": "#6C8570",
@@ -15,54 +14,15 @@ const klanKolory = {
     "NPC": "#aaaaaa"
 };
 
-// Obsługa wysyłania formularza logowania
-document.addEventListener('submit', async (e) => {
-    if (e.target && e.target.id === 'loginForm') {
-        e.preventDefault(); // Zatrzymaj przeładowanie strony
+let currentUser = { loggedIn: false, id: null, username: '', role: 'gosc' };
 
-        const username = document.getElementById('loginUser').value;
-        const password = document.getElementById('loginPass').value;
-        const errorDiv = document.getElementById('loginError');
-
-        try {
-            const response = await fetch('api/login.php', {
-                method: 'POST',
-                headers: { 'Content-Type: application/json'},
-                body: JSON.stringify({ username, password })
-            });
-
-            const result = await response.json();
-
-            if (result.success) {
-                // Sukces! Zamknij modal i odśwież stronę
-                const modal = bootstrap.Modal.getInstance(document.getElementById('loginModal'));
-                modal.hide();
-                window.location.reload();
-            } else {
-                errorDiv.innerText = result.error || 'Błąd logowania';
-            }
-        } catch (err) {
-            errorDiv.innerText = 'Błąd połączenia z serwerem.';
-            console.error(err);
-        }
-    }
-});
-
-// Globalna zmienna przechowująca dane o zalogowanym użytkowniku
-let currentUser = {
-    loggedIn: false,
-    id: null,
-    username: '',
-    role: 'gosc'
-};
-
-// 2. Inicjalizacja przy ładowaniu strony
+// INICJALIZACJA
 document.addEventListener('DOMContentLoaded', async () => {
-    await checkAuth();      // Najpierw sprawdź kim jesteśmy
-    await fetchCharacters(); // Potem pobierz postacie
+    await checkAuth();
+    await fetchCharacters();
 });
 
-// 3. Zarządzanie autoryzacją
+// SPRAWDZANIE SESJI
 async function checkAuth() {
     try {
         const response = await fetch('api/check_auth.php');
@@ -76,102 +36,82 @@ async function checkAuth() {
                 role: data.role
             };
         }
-        renderNavbar();
-    } catch (error) {
-        console.error("Błąd autoryzacji:", error);
-    }
+    } catch (e) { console.error("Błąd sesji"); }
+    renderNavbar();
 }
 
 function renderNavbar() {
     const authDiv = document.getElementById('auth-buttons');
     if (currentUser.loggedIn) {
         authDiv.innerHTML = `
-            <div class="d-flex align-items-center">
-                <span class="me-3 text-light small">Zalogowany jako: <strong class="text-info">${currentUser.username}</strong></span>
-                ${currentUser.role === 'admin' || currentUser.role === 'uzytkownik' ?
-            '<button class="btn btn-success btn-sm me-2" onclick="showAddModal()">+ Dodaj Postać</button>' : ''}
-                <button class="btn btn-outline-danger btn-sm" onclick="logout()">Wyloguj</button>
-            </div>
+            <span class="me-3 small text-secondary">Witaj, <b class="text-white">${currentUser.username}</b></span>
+            <button class="btn btn-sm btn-outline-danger" onclick="logout()">Wyloguj</button>
         `;
     } else {
         authDiv.innerHTML = `
-            <button class="btn btn-primary btn-sm me-2" data-bs-toggle="modal" data-bs-target="#loginModal">Zaloguj</button>
-            <button class="btn btn-outline-light btn-sm" data-bs-toggle="modal" data-bs-target="#registerModal">Zarejestruj</button>
+            <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#loginModal">Zaloguj się</button>
         `;
     }
 }
 
-// 4. Pobieranie i wyświetlanie postaci
+// POBIERANIE POSTACI
 async function fetchCharacters() {
     const container = document.getElementById('characters-container');
-    container.innerHTML = '<div class="text-center w-100"><div class="spinner-border" role="status"></div></div>';
 
     try {
         const response = await fetch('api/get_characters.php');
         const characters = await response.json();
-
         container.innerHTML = '';
-
-        if (characters.length === 0) {
-            container.innerHTML = '<p class="text-center">Brak zapisanych postaci.</p>';
-            return;
-        }
 
         characters.forEach(char => {
             const color = klanKolory[char.klan] || '#444';
+            const canManage = currentUser.role === 'admin' || (currentUser.loggedIn && currentUser.id == char.id_wlasciciela);
 
-            // Logika uprawnień: Admin może wszystko, Użytkownik tylko swoje (id_wlasciciela)
-            const isOwner = currentUser.loggedIn && (parseInt(currentUser.id) === parseInt(char.id_wlasciciela));
-            const isAdmin = currentUser.role === 'admin';
-            const canManage = isAdmin || isOwner;
-
-            const actionButtons = canManage ? `
-                <div class="card-footer bg-transparent border-top-0 d-flex justify-content-center gap-2 pb-3">
-                    <button class="btn btn-sm btn-warning" onclick="editCharacter('${char.id_postaci}')">Edytuj</button>
-                    <button class="btn btn-sm btn-danger" onclick="deleteCharacter('${char.id_postaci}')">Usuń</button>
-                </div>
-            ` : '';
-
-            const cardHtml = `
-                <div class="col-md-6 col-lg-4 col-xl-3">
-                    <div class="card bg-dark text-light border-0 h-100 shadow-lg character-card" style="border-top: 4px solid ${color} !important;">
-                        <div class="position-relative">
-                            <img src="${char.url_awatara || 'https://via.placeholder.com/300x300?text=Brak+Avataru'}" 
-                                 class="card-img-top" alt="${char.imie}" 
-                                 style="height: 250px; object-fit: cover; filter: brightness(0.9);">
-                            <span class="badge position-absolute top-0 end-0 m-2" style="background-color: ${color}">${char.klan}</span>
-                        </div>
+            const card = `
+                <div class="col-md-4 col-lg-3">
+                    <div class="card bg-dark text-light h-100 character-card shadow" style="border-top: 5px solid ${color} !important;">
+                        <img src="${char.url_awatara || 'https://via.placeholder.com/300'}" class="card-img-top">
                         <div class="card-body text-center">
-                            <h5 class="card-title mb-1 fw-bold">${char.imie}</h5>
-                            <p class="text-muted small mb-2">${char.ranga}</p>
-                            <p class="card-text small text-secondary" style="font-style: italic;">
-                                ${char.cechy ? char.cechy : 'Brak przypisanych cech'}
-                            </p>
+                            <h5 class="fw-bold mb-1" style="color: ${color}">${char.imie}</h5>
+                            <div class="badge rounded-pill mb-2" style="background-color: ${color}">${char.klan}</div>
+                            <p class="small text-uppercase mb-0">${char.ranga}</p>
+                            ${canManage ? `
+                                <div class="mt-3 pt-2 border-top border-secondary">
+                                    <button class="btn btn-sm btn-warning">Edytuj</button>
+                                    <button class="btn btn-sm btn-danger">Usuń</button>
+                                </div>
+                            ` : ''}
                         </div>
-                        ${actionButtons}
                     </div>
-                </div>
-            `;
-            container.innerHTML += cardHtml;
+                </div>`;
+            container.innerHTML += card;
         });
-    } catch (error) {
-        container.innerHTML = `<p class="text-danger text-center">Błąd ładowania: ${error.message}</p>`;
+    } catch (e) {
+        container.innerHTML = '<p class="text-center text-danger">Błąd połączenia z API.</p>';
     }
 }
 
-// 5. Funkcje pomocnicze (do zaimplementowania w kolejnym kroku)
+// OBSŁUGA LOGOWANIA
+document.getElementById('loginForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const username = document.getElementById('loginUser').value;
+    const password = document.getElementById('loginPass').value;
+    const errorDiv = document.getElementById('loginError');
+
+    const response = await fetch('api/login.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password })
+    });
+
+    const result = await response.json();
+    if (result.success) {
+        window.location.reload();
+    } else {
+        errorDiv.innerText = result.error || 'Błąd logowania';
+    }
+});
+
 function logout() {
     fetch('api/logout.php').then(() => window.location.reload());
-}
-
-function editCharacter(id) {
-    console.log("Edycja postaci:", id);
-    // Tutaj otworzymy modal z formularzem wypełnionym danymi
-}
-
-function deleteCharacter(id) {
-    if(confirm("Czy na pewno chcesz usunąć tę postać?")) {
-        console.log("Usuwanie postaci:", id);
-        // Tutaj wyślemy request DELETE do API
-    }
 }
