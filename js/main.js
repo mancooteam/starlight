@@ -50,36 +50,37 @@ function renderNavbar() {
 // POBIERANIE POSTACI (TO TU BYŁ PROBLEM)
 async function fetchCharacters() {
     const container = document.getElementById('characters-container');
-    container.innerHTML = '<div class="text-center w-100"><div class="spinner-border text-light"></div></div>';
 
     try {
         const response = await fetch('api/get_characters.php');
         const characters = await response.json();
 
-        container.innerHTML = ''; // Czyścimy spinner
+        container.innerHTML = '';
 
-        if (!characters || characters.length === 0) {
-            container.innerHTML = '<p class="text-center text-muted">Brak postaci w bazie danych.</p>';
-            return;
-        }
+        console.log("Zalogowany użytkownik:", currentUser); // DEBUG
 
         characters.forEach(char => {
             const color = klanKolory[char.klan] || '#444';
-            // Sprawdź czy użytkownik może edytować (Admin lub Właściciel)
-            const canManage = currentUser.role === 'admin' || (currentUser.loggedIn && currentUser.id == char.id_wlasciciela);
+
+            // Logika uprawnień z luźniejszym porównaniem (==) dla ID
+            const isOwner = currentUser.loggedIn && (currentUser.id == char.id_wlasciciela);
+            const isAdmin = currentUser.role === 'admin' || currentUser.role === 'administrator';
+
+            const canManage = isAdmin || isOwner;
 
             const card = `
-                <div class="col-md-4 col-lg-3">
-                    <div class="card bg-dark text-light h-100 shadow" style="border-top: 5px solid ${color} !important; border-radius: 10px; overflow: hidden;">
+                <div class="col-md-4 col-lg-3 mb-4">
+                    <div class="card bg-dark text-light h-100 shadow" style="border-top: 5px solid ${color} !important;">
                         <img src="${char.url_awatara || 'https://via.placeholder.com/300'}" class="card-img-top" style="height: 200px; object-fit: cover;">
                         <div class="card-body text-center">
                             <h5 class="fw-bold mb-1" style="color: ${color}">${char.imie}</h5>
                             <div class="badge rounded-pill mb-2" style="background-color: ${color}">${char.klan}</div>
                             <p class="small text-uppercase mb-0 text-muted">${char.ranga}</p>
+                            
                             ${canManage ? `
-                                <div class="mt-3 pt-2 border-top border-secondary">
-                                    <button class="btn btn-sm btn-warning me-1">Edytuj</button>
-                                    <button class="btn btn-sm btn-danger">Usuń</button>
+                                <div class="mt-3 pt-2 border-top border-secondary d-flex justify-content-center gap-2">
+                                    <button class="btn btn-sm btn-warning" onclick="editChar('${char.id_postaci}')">Edytuj</button>
+                                    <button class="btn btn-sm btn-danger" onclick="deleteChar('${char.id_postaci}')">Usuń</button>
                                 </div>
                             ` : ''}
                         </div>
@@ -88,8 +89,8 @@ async function fetchCharacters() {
             container.innerHTML += card;
         });
     } catch (e) {
-        container.innerHTML = '<p class="text-center text-danger">Błąd połączenia z bazą danych.</p>';
-        console.error(e);
+        container.innerHTML = '<p class="text-center text-danger">Błąd ładowania danych.</p>';
+        console.error("Błąd fetch:", e);
     }
 }
 
