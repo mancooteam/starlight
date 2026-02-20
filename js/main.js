@@ -92,12 +92,12 @@ async function fetchCharacters() {
                             <p class="small text-uppercase mb-0 text-muted">${char.ranga}</p>
                             
                             // Wewnątrz fetchCharacters() w pętli generującej card HTML:
-${canManage ? `
-    <div class="mt-3 pt-2 border-top border-secondary d-flex justify-content-center gap-2">
-        <button class="btn btn-sm btn-warning" onclick="editCharacter('${char.id_postaci}')">Edytuj</button>
-        <button class="btn btn-sm btn-danger" onclick="deleteCharacter('${char.id_postaci}')">Usuń</button>
-    </div>
-` : ''}
+                            ${canManage ? `
+                                <div class="mt-3 pt-2 border-top border-secondary d-flex justify-content-center gap-2">
+                                    <button class="btn btn-sm btn-warning" onclick="editChar('${char.id_postaci}')">Edytuj</button>
+                                    <button class="btn btn-sm btn-danger" onclick="deleteChar('${char.id_postaci}')">Usuń</button>
+                                </div>
+                            ` : ''}
                         </div>
                     </div>
                 </div>`;
@@ -216,6 +216,36 @@ document.getElementById('addCharacterForm').addEventListener('submit', async (e)
         alert("Błąd: " + result.error);
     }
 });
+
+// FUNKCJA USUWANIA
+async function deleteChar(id_postaci) {
+    if (!confirm("Czy na pewno chcesz usunąć tę postać?")) return;
+
+    try {
+        const response = await fetch('api/delete_character.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id_postaci: id_postaci })
+        });
+
+        const result = await response.json();
+        if (result.success) {
+            alert("Postać usunięta.");
+            location.reload();
+        } else {
+            alert("Błąd: " + result.error);
+        }
+    } catch (e) {
+        console.error(e);
+    }
+}
+
+// FUNKCJA EDYCJI (Na razie szkielet, zaraz go wypełnimy)
+function editChar(id_postaci) {
+    console.log("Próba edycji postaci o ID:", id_postaci);
+    // Tutaj zaraz dodamy logikę otwierania modalu z danymi
+}
+
 
 // Funkcja otwierająca modal (wywoływana z paska nawigacji)
 function showAddModal() {
