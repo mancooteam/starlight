@@ -1,132 +1,110 @@
-/**
- * Konfiguracja kolorów dla klanów Starlight RP
- */
 const klanKolory = {
-    "Gwiezdny Klan": "#5C5AA6",
-    "Pustka": "#6C8570",
-    "Plemię Wiecznych Łowów": "#886CAB",
-    "Ciemny Las": "#8F534B",
-    "Klan Cienia": "#E38F9C",
-    "Klan Gromu": "#FFCE7A",
-    "Klan Rzeki": "#7898FF",
-    "Klan Wichru": "#A3E0D5",
-    "Plemię Niedźwiedzich Kłów": "#ffffff",
-    "Bractwo Krwi": "#CA4250",
-    "Samotnik": "#7DBF65",
-    "Nieaktywny": "#828282"
+    "Gwiezdny Klan": "#5C5AA6", "Pustka": "#6C8570", "Plemię Wiecznych Łowów": "#886CAB",
+    "Ciemny Las": "#8F534B", "Klan Cienia": "#E38F9C", "Klan Gromu": "#FFCE7A",
+    "Klan Rzeki": "#7898FF", "Klan Wichru": "#A3E0D5", "Plemię Niedźwiedzich Kłów": "#ffffff",
+    "Bractwo Krwi": "#CA4250", "Samotnik": "#7DBF65", "Nieaktywny": "#828282"
 };
 
-/**
- * Funkcja pomocnicza: Oblicza czy tekst na danym kolorze tła
- * powinien być czarny czy biały dla zachowania kontrastu.
- */
-function getContrastYIQ(hexcolor) {
-    if (!hexcolor) return 'white';
-    hexcolor = hexcolor.replace("#", "");
-    const r = parseInt(hexcolor.substr(0, 2), 16);
-    const g = parseInt(hexcolor.substr(2, 2), 16);
-    const b = parseInt(hexcolor.substr(4, 2), 16);
-    const yiq = ((r * 299) + (g * 587) + (b * 114)) / 1000;
-    return (yiq >= 128) ? 'black' : 'white';
+const typyCechKolory = {
+    'pozytywna': '#28a745', 'mieszana': '#ffc107',
+    'negatywna': '#dc3545', 'ciezka_negatywna': '#6610f2'
+};
+
+document.addEventListener('DOMContentLoaded', () => {
+    populateKlanSelect();
+    fetchCharacters();
+    setupAuthListeners();
+});
+
+function populateKlanSelect() {
+    const s = document.getElementById('klan-select');
+    Object.keys(klanKolory).forEach(k => s.add(new Option(k, k)));
 }
 
-/**
- * Pobieranie danych z backendu PHP
- */
 async function fetchCharacters() {
-    const container = document.getElementById('character-list');
-
-    try {
-        const response = await fetch('get_characters.php');
-        if (!response.ok) throw new Error('Błąd sieci');
-
-        const result = await response.json();
-
-        if (result.status === 'success') {
-            displayCharacters(result.data, result.current_user, result.role);
-            updateAuthUI(result.role);
-        } else {
-            container.innerHTML = `<div class="alert alert-danger">${result.message}</div>`;
-        }
-    } catch (error) {
-        console.error('Błąd:', error);
-        container.innerHTML = `<div class="alert alert-danger">Nie udało się załadować postaci. Upewnij się, że get_characters.php działa.</div>`;
+    const res = await fetch('get_characters.php');
+    const result = await res.json();
+    if (result.status === 'success') {
+        renderCards(result.data, result.current_user, result.role);
+        populateTraits(result.all_traits);
+        updateAuthUI(result.role, result.login);
     }
 }
 
-/**
- * Renderowanie kart postaci w HTML
- */
-function displayCharacters(chars, currentUserId, role) {
+function renderCards(chars, userId, role) {
     const container = document.getElementById('character-list');
-    container.innerHTML = '';
+    container.innerHTML = chars.map(char => {
+        const kolor = klanKolory[char.klan] || "#828282";
+        const canEdit = (role === 'admin' || char.id_wlasciciela == userId);
 
-    if (chars.length === 0) {
-        container.innerHTML = '<div class="text-center">Brak postaci w bazie danych.</div>';
-        return;
-    }
+        let cechyHtml = '';
+        if (char.cechy_listy) {
+            const nazwy = char.cechy_listy.split(', ');
+            const typy = char.cechy_typy.split(', ');
+            cechyHtml = nazwy.map((n, i) => `
+                <span class="badge rounded-pill badge-trait me-1 mb-1" style="background-color: ${typyCechKolory[typy[i]] || '#666'}">
+                    ${n}
+                </span>`).join('');
+        }
 
-    chars.forEach(char => {
-        // Dopasowanie koloru akcentu
-        const kolorAkcentu = klanKolory[char.klan] || "#828282";
-        const tekstKontrastowy = getContrastYIQ(kolorAkcentu);
-
-        // Logika uprawnień: Admin może wszystko, użytkownik tylko swoje
-        const canEdit = (role === 'admin' || (currentUserId && char.id_wlasciciela == currentUserId));
-        const canDelete = (role === 'admin');
-
-        const cardHtml = `
+        return `
             <div class="col-md-4 col-lg-3">
-                <div class="card h-100 shadow-sm" style="border-top: 5px solid ${kolorAkcentu};">
-                    <div class="position-relative">
-                        <img src="${char.url_awatara || 'https://via.placeholder.com/300x400?text=Brak+Avataru'}" 
-                             class="card-img-top avatar-img" 
-                             alt="${char.imie}"
-                             style="height: 250px; object-fit: cover;">
-                        <span class="position-absolute top-0 end-0 m-2 badge rounded-pill" 
-                              style="background-color: ${kolorAkcentu}; border: 1px solid rgba(0,0,0,0.2); width: 15px; height: 15px; padding: 0;">
-                            &nbsp;
-                        </span>
-                    </div>
+                <div class="card shadow-sm" style="border-top: 5px solid ${kolor}">
+                    <img src="${char.url_awatara || 'https://via.placeholder.com/300'}" class="card-img-top avatar-img">
                     <div class="card-body text-center d-flex flex-column">
-                        <h5 class="card-title mb-1" style="color: ${kolorAkcentu === '#ffffff' ? '#ddd' : kolorAkcentu}; font-weight: bold;">
-                            ${char.imie}
-                        </h5>
+                        <h5 class="fw-bold mb-1" style="color: ${kolor === '#ffffff' ? '#fff' : kolor}">${char.imie}</h5>
                         <div class="mb-2">
-                            <span class="badge" style="background-color: ${kolorAkcentu}; color: ${tekstKontrastowy}; font-size: 0.7rem;">
-                                ${char.ranga}
-                            </span>
+                            <span class="badge" style="background-color: ${kolor}; color: ${getContrast(kolor)}">${char.ranga}</span>
                         </div>
-                        <p class="card-text small text-muted mb-3">
-                            Frakcja: <strong>${char.klan || 'Brak'}</strong>
-                        </p>
-                        
-                        <div class="mt-auto pt-2 border-top">
-                            ${canEdit ? `<button class="btn btn-sm btn-outline-warning me-1">Edytuj</button>` : ''}
-                            ${canDelete ? `<button class="btn btn-sm btn-outline-danger">Usuń</button>` : ''}
-                            ${!canEdit && !canDelete ? `<button class="btn btn-sm btn-outline-light disabled">Tylko podgląd</button>` : ''}
+                        <div class="mb-3 text-center">${cechyHtml || '<small class="text-muted">Brak cech</small>'}</div>
+                        <div class="mt-auto pt-2 border-top border-secondary">
+                            ${canEdit ? `<button class="btn btn-sm btn-outline-warning w-100">Edytuj</button>` : `<small class="text-muted">${char.klan}</small>`}
                         </div>
                     </div>
                 </div>
-            </div>
-        `;
-        container.innerHTML += cardHtml;
-    });
+            </div>`;
+    }).join('');
 }
 
-/**
- * Aktualizacja widoczności przycisków w zależności od roli
- */
-function updateAuthUI(role) {
-    const addBtn = document.getElementById('add-char-btn');
-    if (addBtn) {
-        if (role === 'admin' || role === 'user') {
-            addBtn.classList.remove('d-none');
-        } else {
-            addBtn.classList.add('d-none');
-        }
+function populateTraits(traits) {
+    const s = document.getElementById('traits-select');
+    if (s.children.length === 0) {
+        traits.forEach(t => s.add(new Option(`[${t.typ}] ${t.nazwa}`, t.id)));
     }
 }
 
-// Inicjalizacja po załadowaniu strony
-document.addEventListener('DOMContentLoaded', fetchCharacters);
+function setupAuthListeners() {
+    document.getElementById('login-form').onsubmit = async (e) => {
+        e.preventDefault();
+        const res = await fetch('auth.php?action=login', {
+            method: 'POST',
+            body: JSON.stringify({
+                login: document.getElementById('login-input').value,
+                password: document.getElementById('pass-input').value
+            })
+        });
+        const result = await res.json();
+        if (result.status === 'success') location.reload();
+        else document.getElementById('login-error').innerText = result.message;
+    };
+}
+
+function updateAuthUI(role, login) {
+    const isGuest = (role === 'guest');
+    document.getElementById('login-nav-btn').classList.toggle('d-none', !isGuest);
+    document.getElementById('logout-btn').classList.toggle('d-none', isGuest);
+    document.getElementById('add-char-btn').classList.toggle('d-none', isGuest);
+    if (!isGuest) {
+        const d = document.getElementById('user-display');
+        d.innerText = `Witaj, ${login}`;
+        d.classList.remove('d-none');
+    }
+}
+
+async function logout() { await fetch('auth.php?action=logout'); location.reload(); }
+
+function getContrast(hex) {
+    hex = hex.replace("#", "");
+    const r = parseInt(hex.substr(0,2),16), g = parseInt(hex.substr(2,2),16), b = parseInt(hex.substr(4,2),16);
+    return ((r*299)+(g*587)+(b*114))/1000 >= 128 ? 'black' : 'white';
+}

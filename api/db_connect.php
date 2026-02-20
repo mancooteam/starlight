@@ -1,10 +1,6 @@
 <?php
-// Włączamy sesje dla całego systemu
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
+if (session_status() === PHP_SESSION_NONE) { session_start(); }
 
-// Dane z Env Variables (Render)
 $host = getenv('DB_HOST');
 $db   = getenv('DB_NAME');
 $user = getenv('DB_USER');
@@ -19,12 +15,9 @@ $options = [
     PDO::ATTR_EMULATE_PREPARES   => false,
 ];
 
-// Obsługa certyfikatu SSL dla Aiven
 if ($ssl_ca_content) {
     $temp_ca = '/tmp/aiven_ca.pem';
-    if (!file_exists($temp_ca)) {
-        file_put_contents($temp_ca, $ssl_ca_content);
-    }
+    if (!file_exists($temp_ca)) { file_put_contents($temp_ca, $ssl_ca_content); }
     $options[PDO::MYSQL_ATTR_SSL_CA] = $temp_ca;
     $options[PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT] = false;
 }
@@ -32,8 +25,7 @@ if ($ssl_ca_content) {
 try {
     $pdo = new PDO($dsn, $user, $pass, $options);
 } catch (\PDOException $e) {
-    // W produkcji lepiej nie wyświetlać $e->getMessage()
     header('Content-Type: application/json', true, 500);
-    echo json_encode(['error' => 'Błąd połączenia z bazą danych Aiven.']);
+    echo json_encode(['error' => 'Błąd połączenia z bazą danych.']);
     exit;
 }
